@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Plus, Trash2, Download, RefreshCw, Clock, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Plus, Trash2, Download, RefreshCw, Clock, AlertCircle, CheckCircle, Loader2, Package, Bell, X, Check } from 'lucide-react'
 import { useImages } from '../hooks/useImages'
 import type { Image } from '../types'
 
@@ -10,32 +10,75 @@ const platformOptions = [
   { value: 'linux/386', label: 'linux/386' },
 ]
 
+interface Notification {
+  id: number
+  type: 'success' | 'error' | 'info'
+  message: string
+  time: Date
+}
+
 function getStatusBadge(status: Image['status']) {
   switch (status) {
     case 'pending':
-      return <span className="badge badge-pending"><Clock size={14} /> 待处理</span>
+      return <span className="badge badge-pending"><Clock size={12} /> Pending</span>
     case 'pulling':
-      return <span className="badge badge-pulling"><Loader2 size={14} className="spin" /> 拉取中</span>
+      return <span className="badge badge-pulling"><Loader2 size={12} className="spin" /> Pulling</span>
     case 'success':
-      return <span className="badge badge-success"><CheckCircle size={14} /> 成功</span>
+      return <span className="badge badge-success"><CheckCircle size={12} /> Success</span>
     case 'failed':
-      return <span className="badge badge-failed"><AlertCircle size={14} /> 失败</span>
+      return <span className="badge badge-failed"><AlertCircle size={12} /> Failed</span>
     default:
       return <span className="badge">{status}</span>
   }
 }
 
 export default function Images() {
-  const { images, loading, createImage, deleteImage, pullImage, exportImage } = useImages()
+  const { images, createImage, deleteImage, pullImage, exportImage } = useImages()
   const [showModal, setShowModal] = useState(false)
   const [batchMode, setBatchMode] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     tag: 'latest',
-    platform: 'linux/amd64',
+    platforms: ['linux/amd64'],
     is_auto_export: false,
   })
   const [batchText, setBatchText] = useState('')
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const notificationRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const addNotification = (type: Notification['type'], message: string) => {
+    const notification: Notification = {
+      id: Date.now(),
+      type,
+      message,
+      time: new Date()
+    }
+    setNotifications(prev => [notification, ...prev])
+  }
+
+  const removeNotification = (id: number) => {
+    setNotifications(prev => prev.filter(n => n.id !== id))
+  }
+
+  const handlePlatformToggle = (platform: string) => {
+    setFormData(prev => ({
+      ...prev,
+      platforms: prev.platforms.includes(platform)
+        ? prev.platforms.filter(p => p !== platform)
+        : [...prev.platforms, platform]
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,37 +86,92 @@ export default function Images() {
       const lines = batchText.split('\n').filter(line => line.trim())
       for (const line of lines) {
         const [name, tag = 'latest'] = line.split(':')
-        await createImage({ ...formData, name: name.trim(), tag: tag.trim() })
+        for (const platform of formData.platforms) {
+          await createImage({ ...formData, name: name.trim(), tag: tag.trim(), platform })
+        }
       }
+      addNotification('success', `Added ${lines.length * formData.platforms.length} images`)
     } else {
-      await createImage(formData)
+      for (const platform of formData.platforms) {
+        await createImage({ ...formData, platform })
+      }
+      addNotification('success', `Added ${formData.platforms.length} image(s)`)
     }
     setShowModal(false)
-    setFormData({ name: '', tag: 'latest', platform: 'linux/amd64', is_auto_export: false })
+    setFormData({ name: '', tag: 'latest', platforms: ['linux/amd64'], is_auto_export: false })
     setBatchText('')
   }
 
   return (
     <div>
       <div className="page-header">
-        <h1>镜像管理</h1>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          <Plus size={18} /> 添加镜像
-        </button>
+        <h1>Images</h1>
+        <div className="page-header-actions">
+          <div className="notification-wrapper" ref={notificationRef}>
+            <button 
+              className="btn btn-ghost notification-btn" 
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
+              <Bell size={16} />
+              {notifications.length > 0 && (
+                <span className="notification-badge">{notifications.length}</span>
+              )}
+            </button>
+            {showNotifications && (
+              <div className="notification-dropdown">
+                <div className="notification-header">
+                  <span>Notifications</span>
+                  {notifications.length > 0 && (
+                    <button 
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => setNotifications([])}
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+                <div className="notification-list">
+                  {notifications.length === 0 ? (
+                    <div className="notification-empty">No notifications</div>
+                  ) : (
+                    notifications.map(notification => (
+                      <div key={notification.id} className={`notification-item notification-${notification.type}`}>
+                        <div className="notification-content">
+                          {notification.type === 'success' && <Check size={14} />}
+                          {notification.type === 'error' && <AlertCircle size={14} />}
+                          <span>{notification.message}</span>
+                        </div>
+                        <button 
+                          className="notification-close"
+                          onClick={() => removeNotification(notification.id)}
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+            <Plus size={16} /> NEW
+          </button>
+        </div>
       </div>
 
-      <div className="card">
+      <div className="table-container">
         <table className="table">
           <thead>
             <tr>
-              <th>镜像名称</th>
-              <th>标签</th>
-              <th>架构</th>
-              <th>状态</th>
-              <th>重试次数</th>
-              <th>导出路径</th>
-              <th>创建时间</th>
-              <th>操作</th>
+              <th>Image Name</th>
+              <th>Tag</th>
+              <th>Platform</th>
+              <th>Status</th>
+              <th>Retries</th>
+              <th>Export Path</th>
+              <th>Created</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -97,29 +195,29 @@ export default function Images() {
                 <td>
                   <div className="flex gap-2">
                     {img.status === 'failed' && (
-                      <button 
+                      <button
                         className="btn btn-sm btn-secondary"
                         onClick={() => pullImage(img.id)}
-                        title="重新拉取"
+                        title="Retry pull"
                       >
-                        <RefreshCw size={16} />
+                        <RefreshCw size={14} />
                       </button>
                     )}
                     {img.status === 'success' && !img.export_path && (
-                      <button 
+                      <button
                         className="btn btn-sm btn-success"
                         onClick={() => exportImage(img.id)}
-                        title="导出"
+                        title="Export"
                       >
-                        <Download size={16} />
+                        <Download size={14} />
                       </button>
                     )}
-                    <button 
+                    <button
                       className="btn btn-sm btn-danger"
                       onClick={() => deleteImage(img.id)}
-                      title="删除"
+                      title="Delete"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </td>
@@ -127,8 +225,11 @@ export default function Images() {
             ))}
             {images.length === 0 && (
               <tr>
-                <td colSpan={8} className="text-center py-8 text-gray-500">
-                  暂无镜像，点击右上角添加
+                <td colSpan={8} className="text-center py-8">
+                  <div className="empty-state">
+                    <Package size={48} className="empty-state-icon" />
+                    <p>No images yet. Click "Add Image" to get started.</p>
+                  </div>
                 </td>
               </tr>
             )}
@@ -140,24 +241,25 @@ export default function Images() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>添加镜像</h2>
-              <button className="btn btn-secondary" onClick={() => setShowModal(false)}>×</button>
+              <h2>Add Image</h2>
+              <button className="btn-close" onClick={() => setShowModal(false)}>×</button>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="modal-body">
                 <div className="form-group">
-                  <label>
-                    <input 
-                      type="checkbox" 
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
                       checked={batchMode}
                       onChange={(e) => setBatchMode(e.target.checked)}
-                    /> 批量添加模式
+                    />
+                    Batch mode (one per line: name:tag)
                   </label>
                 </div>
 
                 {batchMode ? (
                   <div className="form-group">
-                    <label>镜像列表（每行一个，格式: name:tag）</label>
+                    <label>Image List</label>
                     <textarea
                       className="form-control"
                       rows={6}
@@ -169,13 +271,13 @@ export default function Images() {
                   </div>
                 ) : (
                   <div className="form-group">
-                    <label>镜像名称</label>
+                    <label>Image Name</label>
                     <input
                       type="text"
                       className="form-control"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="例如: nginx"
+                      placeholder="e.g. nginx"
                       required
                     />
                   </div>
@@ -183,7 +285,7 @@ export default function Images() {
 
                 {!batchMode && (
                   <div className="form-group">
-                    <label>标签</label>
+                    <label>Tag</label>
                     <input
                       type="text"
                       className="form-control"
@@ -195,34 +297,41 @@ export default function Images() {
                 )}
 
                 <div className="form-group">
-                  <label>平台架构</label>
-                  <select
-                    className="form-control"
-                    value={formData.platform}
-                    onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-                  >
+                  <label>Platforms</label>
+                  <div className="platform-options">
                     {platformOptions.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      <label 
+                        key={opt.value} 
+                        className={`platform-option ${formData.platforms.includes(opt.value) ? 'selected' : ''}`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.platforms.includes(opt.value)}
+                          onChange={() => handlePlatformToggle(opt.value)}
+                        />
+                        <span className="platform-option-label">{opt.label}</span>
+                      </label>
                     ))}
-                  </select>
+                  </div>
                 </div>
 
                 <div className="form-group">
-                  <label>
+                  <label className="checkbox-label">
                     <input
                       type="checkbox"
                       checked={formData.is_auto_export}
                       onChange={(e) => setFormData({ ...formData, is_auto_export: e.target.checked })}
-                    /> 下载后自动导出
+                    />
+                    Auto-export after pull
                   </label>
                 </div>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
-                  取消
+                  Cancel
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  {batchMode ? '批量添加' : '添加'}
+                  {batchMode ? 'Add Batch' : 'Add Image'}
                 </button>
               </div>
             </form>

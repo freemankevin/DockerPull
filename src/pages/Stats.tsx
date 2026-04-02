@@ -20,27 +20,27 @@ export default function Stats() {
   }, [])
 
   const cards = [
-    { title: '总镜像数', value: stats.total, icon: Package, color: '#0f3460' },
-    { title: '成功', value: stats.success, icon: CheckCircle, color: '#28a745' },
-    { title: '失败', value: stats.failed, icon: XCircle, color: '#dc3545' },
-    { title: '待处理', value: stats.pending, icon: Clock, color: '#ffc107' },
+    { title: 'Total Images', value: stats.total, icon: Package },
+    { title: 'Success', value: stats.success, icon: CheckCircle },
+    { title: 'Failed', value: stats.failed, icon: XCircle },
+    { title: 'Pending', value: stats.pending, icon: Clock },
   ]
 
   return (
     <div>
       <div className="page-header">
-        <h1>统计概览</h1>
+        <h1>Overview</h1>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+      <div className="stats-grid">
         {cards.map((card) => (
-          <div key={card.title} className="card" style={{ borderLeft: `4px solid ${card.color}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <p style={{ color: '#6c757d', fontSize: '14px', marginBottom: '8px' }}>{card.title}</p>
-                <p style={{ fontSize: '36px', fontWeight: 'bold', color: card.color }}>{card.value}</p>
+          <div key={card.title} className="stat-card">
+            <div className="stat-card-content">
+              <div className="stat-info">
+                <p className="stat-title">{card.title}</p>
+                <p className="stat-value">{card.value}</p>
               </div>
-              <card.icon size={48} color={card.color} opacity={0.2} />
+              <card.icon size={32} className="stat-icon" />
             </div>
           </div>
         ))}

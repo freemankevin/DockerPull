@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Save, TestTube } from 'lucide-react'
+import { Save, TestTube, Folder } from 'lucide-react'
 import { useConfig } from '../hooks/useConfig'
 import { webhookApi } from '../api'
 
@@ -9,7 +9,13 @@ export default function Settings() {
   const [formData, setFormData] = useState<any>({})
 
   if (loading || !config) {
-    return <div className="card">加载中...</div>
+    return (
+      <div className="card">
+        <div className="empty-state">
+          <p>Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,15 +24,28 @@ export default function Settings() {
     await updateConfig({ ...config, ...formData })
     setSaving(false)
     setFormData({})
-    alert('保存成功')
+    alert('Settings saved successfully')
   }
 
   const handleTestWebhook = async () => {
     try {
       await webhookApi.test()
-      alert('测试消息已发送')
+      alert('Test webhook sent successfully')
     } catch (err: any) {
-      alert('发送失败: ' + err.message)
+      alert('Failed to send: ' + err.message)
+    }
+  }
+
+  const handleBrowseFolder = async () => {
+    try {
+      // @ts-ignore - showDirectoryPicker is a modern API
+      const dirHandle = await window.showDirectoryPicker?.()
+      if (dirHandle) {
+        const path = dirHandle.name
+        setFormData({ ...formData, export_path: path })
+      }
+    } catch (err) {
+      // User cancelled or API not supported
     }
   }
 
@@ -35,25 +54,36 @@ export default function Settings() {
   return (
     <div>
       <div className="page-header">
-        <h1>系统设置</h1>
+        <h1>Settings</h1>
       </div>
 
       <div className="card">
         <form onSubmit={handleSubmit}>
-          <h3 style={{ marginBottom: '20px', color: '#1a1a2e' }}>基础配置</h3>
+          <h3 className="section-title">General</h3>
 
           <div className="form-group">
-            <label>导出目录</label>
-            <input
-              type="text"
-              className="form-control"
-              value={getValue('export_path')}
-              onChange={(e) => setFormData({ ...formData, export_path: e.target.value })}
-            />
+            <label>Export Directory</label>
+            <div className="input-with-button">
+              <input
+                type="text"
+                className="form-control"
+                value={getValue('export_path')}
+                onChange={(e) => setFormData({ ...formData, export_path: e.target.value })}
+                placeholder="/path/to/exports"
+              />
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleBrowseFolder}
+                title="Browse folder"
+              >
+                <Folder size={16} />
+              </button>
+            </div>
           </div>
 
           <div className="form-group">
-            <label>默认平台架构</label>
+            <label>Default Platform</label>
             <select
               className="form-control"
               value={getValue('default_platform')}
@@ -66,76 +96,80 @@ export default function Settings() {
             </select>
           </div>
 
-          <div className="form-group">
-            <label>并发拉取数</label>
-            <input
-              type="number"
-              className="form-control"
-              value={getValue('concurrent_pulls')}
-              onChange={(e) => setFormData({ ...formData, concurrent_pulls: parseInt(e.target.value) })}
-              min={1}
-              max={10}
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label>Concurrent Pulls</label>
+              <input
+                type="number"
+                className="form-control"
+                value={getValue('concurrent_pulls')}
+                onChange={(e) => setFormData({ ...formData, concurrent_pulls: parseInt(e.target.value) })}
+                min={1}
+                max={10}
+              />
+            </div>
+            <div className="form-group">
+              <label>Gzip Compression (1-9)</label>
+              <input
+                type="number"
+                className="form-control"
+                value={getValue('gzip_compression')}
+                onChange={(e) => setFormData({ ...formData, gzip_compression: parseInt(e.target.value) })}
+                min={1}
+                max={9}
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Gzip 压缩级别 (1-9)</label>
-            <input
-              type="number"
-              className="form-control"
-              value={getValue('gzip_compression')}
-              onChange={(e) => setFormData({ ...formData, gzip_compression: parseInt(e.target.value) })}
-              min={1}
-              max={9}
-            />
+          <h3 className="section-title">Retry Settings</h3>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Max Retries (0 = unlimited)</label>
+              <input
+                type="number"
+                className="form-control"
+                value={getValue('retry_max_attempts')}
+                onChange={(e) => setFormData({ ...formData, retry_max_attempts: parseInt(e.target.value) })}
+                min={0}
+              />
+            </div>
+            <div className="form-group">
+              <label>Retry Interval (seconds)</label>
+              <input
+                type="number"
+                className="form-control"
+                value={getValue('retry_interval_sec')}
+                onChange={(e) => setFormData({ ...formData, retry_interval_sec: parseInt(e.target.value) })}
+                min={1}
+              />
+            </div>
           </div>
 
-          <h3 style={{ margin: '30px 0 20px', color: '#1a1a2e' }}>重试配置</h3>
+          <h3 className="section-title">Webhook Notifications</h3>
 
           <div className="form-group">
-            <label>最大重试次数 (0 = 无限重试)</label>
-            <input
-              type="number"
-              className="form-control"
-              value={getValue('retry_max_attempts')}
-              onChange={(e) => setFormData({ ...formData, retry_max_attempts: parseInt(e.target.value) })}
-              min={0}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>重试间隔（秒）</label>
-            <input
-              type="number"
-              className="form-control"
-              value={getValue('retry_interval_sec')}
-              onChange={(e) => setFormData({ ...formData, retry_interval_sec: parseInt(e.target.value) })}
-              min={1}
-            />
-          </div>
-
-          <h3 style={{ margin: '30px 0 20px', color: '#1a1a2e' }}>Webhook 通知</h3>
-
-          <div className="form-group">
-            <label>
+            <label className="checkbox-label">
               <input
                 type="checkbox"
                 checked={getValue('enable_webhook')}
                 onChange={(e) => setFormData({ ...formData, enable_webhook: e.target.checked })}
-              /> 启用 Webhook 通知
+              />
+              Enable webhook notifications
             </label>
           </div>
 
           <div className="form-group">
-            <label>Webhook 类型</label>
+            <label>Webhook Type</label>
             <select
               className="form-control"
               value={getValue('webhook_type')}
               onChange={(e) => setFormData({ ...formData, webhook_type: e.target.value })}
+              disabled={!getValue('enable_webhook')}
             >
-              <option value="dingtalk">钉钉</option>
-              <option value="feishu">飞书</option>
-              <option value="wechat">企业微信</option>
+              <option value="dingtalk">DingTalk</option>
+              <option value="feishu">Lark (Feishu)</option>
+              <option value="wechat">WeChat Work</option>
             </select>
           </div>
 
@@ -147,20 +181,21 @@ export default function Settings() {
               value={getValue('webhook_url')}
               onChange={(e) => setFormData({ ...formData, webhook_url: e.target.value })}
               placeholder="https://..."
+              disabled={!getValue('enable_webhook')}
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="button-group">
             <button type="submit" className="btn btn-primary" disabled={saving}>
-              <Save size={18} /> {saving ? '保存中...' : '保存设置'}
+              <Save size={16} /> {saving ? 'Saving...' : 'Save Settings'}
             </button>
-            <button 
-              type="button" 
-              className="btn btn-secondary" 
+            <button
+              type="button"
+              className="btn btn-secondary"
               onClick={handleTestWebhook}
               disabled={!getValue('enable_webhook')}
             >
-              <TestTube size={18} /> 测试 Webhook
+              <TestTube size={16} /> Test Webhook
             </button>
           </div>
         </form>
