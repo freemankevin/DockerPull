@@ -26,6 +26,13 @@ type ImageLog struct {
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
+type User struct {
+	ID        int64     `json:"id" db:"id"`
+	Username  string    `json:"username" db:"username"`
+	Password  string    `json:"-" db:"password"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
 type CreateImageRequest struct {
 	Name         string `json:"name" binding:"required"`
 	Tag          string `json:"tag" default:"latest"`
@@ -47,4 +54,14 @@ type UpdateConfigRequest struct {
 	ConcurrentPulls  int    `json:"concurrent_pulls"`
 	DefaultPlatform  string `json:"default_platform"`
 	GzipCompression  int    `json:"gzip_compression"`
+}
+
+type LoginRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type LoginResponse struct {
+	Token string `json:"token"`
+	User  User   `json:"user"`
 }

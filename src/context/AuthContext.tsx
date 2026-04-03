@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 
+const API_BASE = 'http://127.0.0.1:9238'
+
 interface User {
+  id: number
   username: string
   avatar: string | null
 }
@@ -11,6 +14,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<boolean>
   logout: () => void
   updateAvatar: (avatar: string) => void
+  getToken: () => string | null
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -45,22 +49,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('dockpull_user', JSON.stringify(user))
     } else {
       localStorage.removeItem('dockpull_user')
+      localStorage.removeItem('dockpull_token')
     }
   }, [user])
 
+  const getToken = () => localStorage.getItem('dockpull_token')
+
   const login = async (username: string, password: string): Promise<boolean> => {
-    if (username === 'admin' && password === '123456') {
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+
+      if (!response.ok) {
+        return false
+      }
+
+      const data = await response.json()
+      localStorage.setItem('dockpull_token', data.token)
       setUser({
-        username: 'admin',
+        id: data.user.id,
+        username: data.user.username,
         avatar: localStorage.getItem('dockpull_avatar') || DEFAULT_AVATAR
       })
       return true
+    } catch {
+      return false
     }
-    return false
   }
 
   const logout = () => {
     setUser(null)
+    localStorage.removeItem('dockpull_token')
   }
 
   const updateAvatar = (avatar: string) => {
@@ -79,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, updateAvatar }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, updateAvatar, getToken }}>
       {children}
     </AuthContext.Provider>
   )

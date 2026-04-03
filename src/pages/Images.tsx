@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Download, RefreshCw, Clock, AlertCircle, CheckCircle, Loader2, Package } from 'lucide-react'
+import { Plus, Trash2, Download, RefreshCw, Clock, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 import { useImages } from '../hooks/useImages'
 import { useNotification } from '../context/NotificationContext'
 import { imagesApi } from '../api'
@@ -170,18 +170,13 @@ export default function Images() {
           </tbody>
         </table>
         {images.length === 0 && (
-          <div className="empty-state">
+          <div className="empty-state clickable" onClick={() => setShowModal(true)}>
             <div className="empty-state-icon">
-              <Package size={48} strokeWidth={1.5} />
+              <Plus size={48} strokeWidth={1.5} />
             </div>
-            <div className="empty-state-title">No images yet</div>
+            <div className="empty-state-title">Add a New Image</div>
             <div className="empty-state-description">
               Pull and manage Docker images. Add your first image to get started with container deployment.
-            </div>
-            <div className="empty-state-action">
-              <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-                <Plus size={16} /> Add Image
-              </button>
             </div>
           </div>
         )}

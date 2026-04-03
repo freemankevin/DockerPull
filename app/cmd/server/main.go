@@ -26,6 +26,12 @@ func main() {
 		return
 	}
 
+	authHandler := handler.NewAuthHandler(db)
+	if err := authHandler.InitDefaultUser(); err != nil {
+		fmt.Printf("\033[31m%s [ERROR] Failed to init default user: %v\033[0m\n",
+			time.Now().Format("2006-01-02 15:04:05"), err)
+	}
+
 	dockerService := docker.NewDockerService(cfg)
 	imageService := service.NewImageService(db, dockerService, cfg)
 	webhookService := service.NewWebhookService(cfg)
@@ -39,21 +45,40 @@ func main() {
 	r := gin.New()
 	r.Use(middleware.Logger())
 
-	h := handler.NewHandler(imageService, dockerService, webhookService, cfg)
+	r.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Authorization, Content-Type")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
 
-	r.GET("/api/images", h.ListImages)
-	r.POST("/api/images", h.CreateImage)
-	r.DELETE("/api/images/:id", h.DeleteImage)
-	r.GET("/api/images/:id/logs", h.GetImageLogs)
-	r.POST("/api/images/:id/pull", h.PullImage)
-	r.POST("/api/images/:id/export", h.ExportImage)
-	r.GET("/api/images/check-platforms", h.CheckPlatforms)
-	r.GET("/api/config", h.GetConfig)
-	r.PUT("/api/config", h.UpdateConfig)
-	r.POST("/api/webhook/test", h.TestWebhook)
-	r.GET("/api/stats", h.GetStats)
+	r.POST("/api/auth/login", authHandler.Login)
+	r.GET("/api/auth/me", middleware.AuthMiddleware(), authHandler.Me)
+
+	api := r.Group("/api")
+	api.Use(middleware.AuthMiddleware())
+	{
+		h := handler.NewHandler(imageService, dockerService, webhookService, cfg)
+		api.GET("/images", h.ListImages)
+		api.POST("/images", h.CreateImage)
+		api.DELETE("/images/:id", h.DeleteImage)
+		api.GET("/images/:id/logs", h.GetImageLogs)
+		api.POST("/images/:id/pull", h.PullImage)
+		api.POST("/images/:id/export", h.ExportImage)
+		api.GET("/images/check-platforms", h.CheckPlatforms)
+		api.GET("/config", h.GetConfig)
+		api.PUT("/config", h.UpdateConfig)
+		api.POST("/webhook/test", h.TestWebhook)
+		api.GET("/stats", h.GetStats)
+	}
 
 	fmt.Printf("\033[32m%s [INFO] Server starting on 127.0.0.1:9238\033[0m\n",
+		time.Now().Format("2006-01-02 15:04:05"))
+	fmt.Printf("\033[36m%s [INFO] Default credentials: admin / 123456\033[0m\n",
 		time.Now().Format("2006-01-02 15:04:05"))
 	r.Run("127.0.0.1:9238")
 }

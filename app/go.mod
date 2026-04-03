@@ -5,7 +5,9 @@ go 1.25.0
 require (
 	github.com/docker/docker v20.10.24+incompatible
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/robfig/cron/v3 v3.0.1
+	golang.org/x/crypto v0.48.0
 	modernc.org/sqlite v1.29.1
 )
 
@@ -50,7 +52,6 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.34.0 // indirect

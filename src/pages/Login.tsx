@@ -7,6 +7,7 @@ export default function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
@@ -28,6 +29,10 @@ export default function Login() {
     }
   }
 
+  const handleSSO = () => {
+    console.log('SSO login clicked')
+  }
+
   return (
     <div className="login-container">
       <div className="login-background">
@@ -40,7 +45,7 @@ export default function Login() {
         <div className="login-dots">
           {Array.from({ length: 25 }).map((_, i) => <span key={i} />)}
         </div>
-        <div className="login-version">© 2026 DockPull</div>
+        <div className="login-version">© 2026 DockPull — v2.4.1</div>
       </div>
       <div className="login-form-container">
         <div className="login-form-wrapper">
@@ -53,7 +58,7 @@ export default function Login() {
             <div className="login-field">
               <label htmlFor="username">Username</label>
               <div className="login-input-wrapper">
-                <User size={18} className="login-input-icon" />
+                <User size={16} className="login-input-icon" />
                 <input
                   type="text"
                   id="username"
@@ -68,7 +73,7 @@ export default function Login() {
             <div className="login-field">
               <label htmlFor="password">Password</label>
               <div className="login-input-wrapper">
-                <Lock size={18} className="login-input-icon" />
+                <Lock size={16} className="login-input-icon" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
@@ -83,15 +88,44 @@ export default function Login() {
                   className="login-password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
+                  aria-label="Toggle password visibility"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+            </div>
+            <div className="login-row-meta">
+              <label className="login-remember">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                Remember me
+              </label>
+              <a href="#" className="login-forgot">Forgot password?</a>
             </div>
             <button type="submit" className="login-submit" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
+          <div className="login-divider">
+            <div className="login-divider-line" />
+            <span className="login-divider-text">or</span>
+            <div className="login-divider-line" />
+          </div>
+          <button type="button" className="login-sso-btn" onClick={handleSSO}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+            </svg>
+            Continue with SSO
+          </button>
+          <p className="login-form-footer">
+            New to DockPull? <a href="#">Request access</a>
+          </p>
         </div>
       </div>
     </div>
