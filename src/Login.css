@@ -1,0 +1,234 @@
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.login-background {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.login-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.login-overlay {
+  position: absolute;
+  z-index: 1;
+  padding: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.login-brand {
+  max-width: 600px;
+  position: absolute;
+  top: 180px;
+  left: 60px;
+}
+
+.login-title {
+  font-family: 'Playball', cursive;
+  font-size: 72px;
+  font-weight: 400;
+  color: #ffffff;
+  margin-bottom: 16px;
+  text-shadow: 2px 4px 12px rgba(0, 0, 0, 0.4);
+  letter-spacing: 2px;
+}
+
+.login-subtitle {
+  font-family: 'Playball', cursive;
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.6;
+  text-shadow: 1px 2px 6px rgba(0, 0, 0, 0.4);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.login-form-container {
+  width: 480px;
+  min-width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border-color);
+}
+
+.login-form-wrapper {
+  width: 100%;
+  max-width: 360px;
+  padding: 40px;
+}
+
+.login-form-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-form-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-family: var(--font-sans);
+}
+
+.login-form-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-family: var(--font-sans);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-error {
+  background: var(--red-50);
+  color: var(--red-600);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-field label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.login-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.login-password-toggle {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.login-password-toggle:hover {
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+}
+
+.login-field input {
+  width: 100%;
+  padding: 12px 44px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+  font-family: var(--font-sans);
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: var(--purple-500);
+  box-shadow: 0 0 0 3px var(--purple-50);
+}
+
+.login-field input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.login-submit {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--purple-500);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 8px;
+  font-family: var(--font-sans);
+}
+
+.login-submit:hover:not(:disabled) {
+  background: var(--purple-600);
+}
+
+.login-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
+  .login-background {
+    display: none;
+  }
+  
+  .login-form-container {
+    width: 100%;
+    min-width: unset;
+    border-left: none;
+  }
+  
+  .login-form-wrapper {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form-wrapper {
+    padding: 24px;
+  }
+  
+  .login-form-header h2 {
+    font-size: 24px;
+  }
+  
+  .login-title {
+    font-size: 48px;
+  }
+}

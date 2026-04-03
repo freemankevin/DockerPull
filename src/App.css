@@ -31,7 +31,7 @@
 }
 
 .logo span {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.01em;
@@ -54,7 +54,7 @@
   transition: all 0.15s ease;
   border-radius: 8px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .nav-links li a:hover {
@@ -79,6 +79,56 @@
   padding: 8px 0;
 }
 
+.user-avatar-container {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.user-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.user-avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  border-radius: 50%;
+  color: white;
+}
+
+.user-avatar-container:hover .user-avatar-overlay {
+  opacity: 1;
+}
+
 .user-avatar {
   width: 32px;
   height: 32px;
@@ -98,7 +148,7 @@
 }
 
 .user-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: #111827;
   white-space: nowrap;
@@ -107,8 +157,44 @@
 }
 
 .user-role {
-  font-size: 12px;
+  font-size: 13px;
   color: #9ca3af;
+}
+
+.theme-toggle-small {
+  padding: 6px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+}
+
+.theme-toggle-small:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.logout-btn {
+  padding: 6px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+}
+
+.logout-btn:hover {
+  background: var(--red-50);
+  color: var(--red-500);
 }
 
 /* Content Area */
@@ -166,7 +252,7 @@
 }
 
 .page-header h1 {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
@@ -225,7 +311,7 @@
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-primary);
 }
 
@@ -238,7 +324,7 @@
   padding: 32px 16px;
   text-align: center;
   color: var(--text-tertiary);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .notification-item {
@@ -247,7 +333,7 @@
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
-  font-size: 13px;
+  font-size: 14px;
   gap: 8px;
 }
 
@@ -301,7 +387,7 @@
   border: 1px solid transparent;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   transition: all 0.15s ease;
   line-height: 1.5;
@@ -310,7 +396,7 @@
 
 .btn-sm {
   padding: 6px 10px;
-  font-size: 12px;
+  font-size: 13px;
   border-radius: 6px;
 }
 
@@ -398,7 +484,7 @@
 }
 
 .card-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -423,7 +509,7 @@
 .table td {
   padding: 14px 20px;
   text-align: left;
-  font-size: 13px;
+  font-size: 14px;
   vertical-align: middle;
 }
 
@@ -466,14 +552,14 @@
 }
 
 .empty-state-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: #111827;
   margin-bottom: 8px;
 }
 
 .empty-state-description {
-  font-size: 14px;
+  font-size: 15px;
   color: #6b7280;
   max-width: 400px;
   margin: 0 auto;
@@ -491,7 +577,7 @@
   gap: 4px;
   padding: 4px 8px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.5;
 }
@@ -526,7 +612,7 @@
   margin-bottom: 6px;
   font-weight: 500;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .form-control {
@@ -534,7 +620,7 @@
   padding: 10px 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   transition: all 0.15s ease;
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -622,7 +708,7 @@
 }
 
 .modal-header h2 {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -642,7 +728,7 @@
 
 /* Modal Animations */
 .section-title {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 20px;
@@ -713,13 +799,13 @@
 
 .stat-title {
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 14px;
   margin-bottom: 4px;
   font-weight: 500;
 }
 
 .stat-value {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
@@ -761,7 +847,7 @@
 
 /* Text Utilities */
 .text-sm {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .text-gray-600 {
@@ -844,7 +930,7 @@ select.form-control {
   cursor: pointer;
   transition: all 0.15s ease;
   background: var(--bg-primary);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-primary);
 }
 
@@ -871,7 +957,7 @@ select.form-control {
 .platform-option-label {
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 /* Railway-style Content Box */
@@ -891,7 +977,7 @@ select.form-control {
 }
 
 .content-box-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -902,7 +988,7 @@ select.form-control {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-primary);
   line-height: 1.5;
 }
