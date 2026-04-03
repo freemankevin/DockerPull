@@ -3,11 +3,11 @@
   min-height: 100vh;
 }
 
-/* Sidebar */
+/* Sidebar - Railway Style */
 .sidebar {
-  width: 240px;
-  background: var(--bg-primary);
-  border-right: 1px solid var(--border-color);
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
   padding: 0;
   position: fixed;
   height: 100vh;
@@ -19,59 +19,103 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 20px 16px;
-  border-bottom: 1px solid var(--border-color);
+  gap: 10px;
+  padding: 16px 16px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .logo-image {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
 }
 
 .logo span {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .nav-links {
   list-style: none;
-  padding: 8px 0;
+  padding: 12px 8px;
   flex: 1;
 }
 
 .nav-links li a {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  margin: 2px 12px;
-  color: var(--text-secondary);
+  gap: 8px;
+  padding: 8px 12px;
+  margin: 2px 0;
+  color: #6b7280;
   text-decoration: none;
   transition: all 0.15s ease;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   font-weight: 500;
   font-size: 14px;
 }
 
 .nav-links li a:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+  background: #f3f4f6;
+  color: #111827;
 }
 
 .nav-links li a.active {
-  background: var(--accent-bg);
-  color: var(--accent-color);
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #9ca3af;
 }
 
 /* Content Area */
 .content {
   flex: 1;
-  margin-left: 240px;
-  background: var(--bg-secondary);
+  margin-left: 220px;
+  background: #fafafa;
   min-height: 100vh;
 }
 
@@ -85,6 +129,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  gap: 12px;
 }
 
 .content-header-spacer {
@@ -95,7 +140,7 @@
   padding: 8px 12px;
   border: 1px solid var(--border-color);
   background: var(--bg-primary);
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -167,7 +212,7 @@
   width: 320px;
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   box-shadow: var(--shadow-lg);
   z-index: 200;
   overflow: hidden;
@@ -254,7 +299,7 @@
   gap: 6px;
   padding: 8px 14px;
   border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
@@ -266,6 +311,7 @@
 .btn-sm {
   padding: 6px 10px;
   font-size: 12px;
+  border-radius: 6px;
 }
 
 .btn:disabled {
@@ -273,16 +319,16 @@
   cursor: not-allowed;
 }
 
-/* Filled Primary Button */
+/* Filled Primary Button - Railway Purple */
 .btn-primary {
-  background: var(--accent-color);
+  background: #7c3aed;
   color: white;
-  border-color: var(--accent-color);
+  border-color: #7c3aed;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+  background: #6d28d9;
+  border-color: #6d28d9;
 }
 
 /* Success Button */
@@ -336,7 +382,7 @@
 /* Cards - Railway Style */
 .card {
   background: var(--bg-primary);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   padding: 24px;
   border: 1px solid var(--border-color);
   margin-bottom: 24px;
@@ -360,7 +406,7 @@
 /* Tables */
 .table-container {
   overflow-x: auto;
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   border: 1px solid var(--border-color);
   background: var(--bg-primary);
   margin: 0 40px 24px;
@@ -402,16 +448,40 @@
   background: var(--bg-secondary);
 }
 
-/* Empty State */
+/* Empty State - Railway Style Dashed Box */
 .empty-state {
+  border: 1.5px dashed #d1d5db;
+  border-radius: 12px;
+  background: #fafafa;
+  padding: 64px 48px;
   text-align: center;
-  padding: 48px 24px;
-  color: var(--text-secondary);
+  margin: 40px;
 }
 
 .empty-state-icon {
-  margin-bottom: 16px;
-  color: var(--text-tertiary);
+  margin-bottom: 20px;
+  color: #9ca3af;
+  display: flex;
+  justify-content: center;
+}
+
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.empty-state-description {
+  font-size: 14px;
+  color: #6b7280;
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.empty-state-action {
+  margin-top: 24px;
 }
 
 /* Badges - Railway Style */
@@ -420,7 +490,7 @@
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   line-height: 1.5;
@@ -461,9 +531,9 @@
 
 .form-control {
   width: 100%;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   font-size: 13px;
   transition: all 0.15s ease;
   background: var(--bg-primary);
@@ -473,8 +543,8 @@
 
 .form-control:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px var(--accent-bg);
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px #f5f3ff;
 }
 
 .form-control:disabled {
@@ -523,7 +593,7 @@
 
 .modal {
   background: var(--bg-primary);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   width: 100%;
   max-width: 480px;
   max-height: calc(100vh - 40px);
@@ -575,13 +645,21 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 32px 0 20px;
+  margin: 0 0 20px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
 }
 
 .section-title:first-child {
   margin-top: 0;
+}
+
+.settings-section {
+  margin-bottom: 32px;
+}
+
+.settings-section:last-of-type {
+  margin-bottom: 0;
 }
 
 /* Button Groups */
@@ -594,15 +672,33 @@
 /* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
 
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .stat-card {
-  background: var(--bg-primary);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 20px 24px;
   border: 1px solid var(--border-color);
+  transition: all 0.15s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--border-color-hover);
+  background: var(--bg-tertiary);
 }
 
 .stat-card-content {
@@ -631,6 +727,36 @@
 
 .stat-icon {
   color: var(--text-tertiary);
+  opacity: 0.6;
+}
+
+.stat-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+}
+
+.stat-icon-purple {
+  background: var(--purple-50);
+  color: var(--purple-500);
+}
+
+.stat-icon-green {
+  background: var(--green-50);
+  color: var(--green-500);
+}
+
+.stat-icon-red {
+  background: var(--red-50);
+  color: var(--red-500);
+}
+
+.stat-icon-yellow {
+  background: var(--yellow-50);
+  color: var(--yellow-600);
 }
 
 /* Text Utilities */
@@ -687,7 +813,7 @@ select.form-control {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   border: none;
   background: transparent;
   color: var(--text-secondary);
@@ -714,7 +840,7 @@ select.form-control {
   gap: 8px;
   padding: 8px 12px;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
   background: var(--bg-primary);
@@ -728,9 +854,9 @@ select.form-control {
 }
 
 .platform-option.selected {
-  border-color: var(--accent-color);
-  background: var(--accent-bg);
-  color: var(--accent-color);
+  border-color: #7c3aed;
+  background: #f5f3ff;
+  color: #7c3aed;
 }
 
 .platform-option input[type="checkbox"] {
@@ -752,7 +878,7 @@ select.form-control {
 .content-box {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   padding: 24px;
   margin: 0 40px 24px;
 }

@@ -1,21 +1,14 @@
-import { useState, useRef, useEffect } from 'react'
-import { Plus, Trash2, Download, RefreshCw, Clock, AlertCircle, CheckCircle, Loader2, Package, Bell, X, Check } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, Trash2, Download, RefreshCw, Clock, AlertCircle, CheckCircle, Loader2, Package } from 'lucide-react'
 import { useImages } from '../hooks/useImages'
+import { useNotification } from '../context/NotificationContext'
+import { imagesApi } from '../api'
 import type { Image } from '../types'
 
 const platformOptions = [
   { value: 'linux/amd64', label: 'linux/amd64' },
   { value: 'linux/arm64', label: 'linux/arm64' },
-  { value: 'linux/arm/v7', label: 'linux/arm/v7' },
-  { value: 'linux/386', label: 'linux/386' },
 ]
-
-interface Notification {
-  id: number
-  type: 'success' | 'error' | 'info'
-  message: string
-  time: Date
-}
 
 function getStatusBadge(status: Image['status']) {
   switch (status) {
@@ -34,42 +27,15 @@ function getStatusBadge(status: Image['status']) {
 
 export default function Images() {
   const { images, createImage, deleteImage, pullImage, exportImage } = useImages()
+  const { addNotification } = useNotification()
   const [showModal, setShowModal] = useState(false)
   const [batchMode, setBatchMode] = useState(false)
   const [formData, setFormData] = useState({
-    name: '',
-    tag: 'latest',
-    platforms: ['linux/amd64'],
+    fullName: '',
+    platforms: ['linux/amd64', 'linux/arm64'],
     is_auto_export: false,
   })
   const [batchText, setBatchText] = useState('')
-  const [showNotifications, setShowNotifications] = useState(false)
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const notificationRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
-        setShowNotifications(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  const addNotification = (type: Notification['type'], message: string) => {
-    const notification: Notification = {
-      id: Date.now(),
-      type,
-      message,
-      time: new Date()
-    }
-    setNotifications(prev => [notification, ...prev])
-  }
-
-  const removeNotification = (id: number) => {
-    setNotifications(prev => prev.filter(n => n.id !== id))
-  }
 
   const handlePlatformToggle = (platform: string) => {
     setFormData(prev => ({
@@ -80,25 +46,52 @@ export default function Images() {
     }))
   }
 
+  const parseImageName = (fullName: string) => {
+    const parts = fullName.split(':')
+    const name = parts[0].trim()
+    const tag = parts[1]?.trim() || 'latest'
+    return { name, tag }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    let platformsToPull = formData.platforms
+    
+    const firstImage = batchMode ? batchText.split('\n')[0].trim() : formData.fullName
+    if (firstImage && platformsToPull.includes('linux/arm64')) {
+      const { name, tag } = parseImageName(firstImage)
+      try {
+        const checkRes = await imagesApi.checkPlatforms(name, tag)
+        const supportedPlatforms = checkRes.data.platforms || []
+        
+        if (!supportedPlatforms.includes('linux/arm64')) {
+          addNotification('error', `镜像不支持 linux/arm64 架构，将只拉取 linux/amd64`)
+          platformsToPull = platformsToPull.filter(p => p !== 'linux/arm64')
+        }
+      } catch (err) {
+        addNotification('info', '无法校验镜像架构，将继续拉取所选平台')
+      }
+    }
+    
     if (batchMode) {
       const lines = batchText.split('\n').filter(line => line.trim())
       for (const line of lines) {
-        const [name, tag = 'latest'] = line.split(':')
-        for (const platform of formData.platforms) {
-          await createImage({ ...formData, name: name.trim(), tag: tag.trim(), platform })
+        const { name, tag } = parseImageName(line)
+        for (const platform of platformsToPull) {
+          await createImage({ name, tag, platform, is_auto_export: formData.is_auto_export })
         }
       }
-      addNotification('success', `Added ${lines.length * formData.platforms.length} images`)
+      addNotification('success', `Added ${lines.length * platformsToPull.length} images`)
     } else {
-      for (const platform of formData.platforms) {
-        await createImage({ ...formData, platform })
+      const { name, tag } = parseImageName(formData.fullName)
+      for (const platform of platformsToPull) {
+        await createImage({ name, tag, platform, is_auto_export: formData.is_auto_export })
       }
-      addNotification('success', `Added ${formData.platforms.length} image(s)`)
+      addNotification('success', `Added ${platformsToPull.length} image(s)`)
     }
     setShowModal(false)
-    setFormData({ name: '', tag: 'latest', platforms: ['linux/amd64'], is_auto_export: false })
+    setFormData({ fullName: '', platforms: ['linux/amd64', 'linux/arm64'], is_auto_export: false })
     setBatchText('')
   }
 
@@ -107,53 +100,6 @@ export default function Images() {
       <div className="page-header">
         <h1>Images</h1>
         <div className="page-header-actions">
-          <div className="notification-wrapper" ref={notificationRef}>
-            <button 
-              className="btn btn-ghost notification-btn" 
-              onClick={() => setShowNotifications(!showNotifications)}
-            >
-              <Bell size={16} />
-              {notifications.length > 0 && (
-                <span className="notification-badge">{notifications.length}</span>
-              )}
-            </button>
-            {showNotifications && (
-              <div className="notification-dropdown">
-                <div className="notification-header">
-                  <span>Notifications</span>
-                  {notifications.length > 0 && (
-                    <button 
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => setNotifications([])}
-                    >
-                      Clear all
-                    </button>
-                  )}
-                </div>
-                <div className="notification-list">
-                  {notifications.length === 0 ? (
-                    <div className="notification-empty">No notifications</div>
-                  ) : (
-                    notifications.map(notification => (
-                      <div key={notification.id} className={`notification-item notification-${notification.type}`}>
-                        <div className="notification-content">
-                          {notification.type === 'success' && <Check size={14} />}
-                          {notification.type === 'error' && <AlertCircle size={14} />}
-                          <span>{notification.message}</span>
-                        </div>
-                        <button 
-                          className="notification-close"
-                          onClick={() => removeNotification(notification.id)}
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>
             <Plus size={16} /> NEW
           </button>
@@ -164,8 +110,7 @@ export default function Images() {
         <table className="table">
           <thead>
             <tr>
-              <th>Image Name</th>
-              <th>Tag</th>
+              <th>Image</th>
               <th>Platform</th>
               <th>Status</th>
               <th>Retries</th>
@@ -177,8 +122,7 @@ export default function Images() {
           <tbody>
             {images.map((img) => (
               <tr key={img.id}>
-                <td><code>{img.name}</code></td>
-                <td>{img.tag}</td>
+                <td><code>{img.name}:{img.tag}</code></td>
                 <td>{img.platform}</td>
                 <td>{getStatusBadge(img.status)}</td>
                 <td>{img.retry_count}</td>
@@ -223,18 +167,24 @@ export default function Images() {
                 </td>
               </tr>
             ))}
-            {images.length === 0 && (
-              <tr>
-                <td colSpan={8} className="text-center py-8">
-                  <div className="empty-state">
-                    <Package size={48} className="empty-state-icon" />
-                    <p>No images yet. Click "Add Image" to get started.</p>
-                  </div>
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
+        {images.length === 0 && (
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <Package size={48} strokeWidth={1.5} />
+            </div>
+            <div className="empty-state-title">No images yet</div>
+            <div className="empty-state-description">
+              Pull and manage Docker images. Add your first image to get started with container deployment.
+            </div>
+            <div className="empty-state-action">
+              <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+                <Plus size={16} /> Add Image
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {showModal && (
@@ -253,13 +203,13 @@ export default function Images() {
                       checked={batchMode}
                       onChange={(e) => setBatchMode(e.target.checked)}
                     />
-                    Batch mode (one per line: name:tag)
+                    Batch mode (one per line)
                   </label>
                 </div>
 
                 {batchMode ? (
                   <div className="form-group">
-                    <label>Image List</label>
+                    <label>Images</label>
                     <textarea
                       className="form-control"
                       rows={6}
@@ -271,27 +221,14 @@ export default function Images() {
                   </div>
                 ) : (
                   <div className="form-group">
-                    <label>Image Name</label>
+                    <label>Image</label>
                     <input
                       type="text"
                       className="form-control"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g. nginx"
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      placeholder="nginx:latest"
                       required
-                    />
-                  </div>
-                )}
-
-                {!batchMode && (
-                  <div className="form-group">
-                    <label>Tag</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.tag}
-                      onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
-                      placeholder="latest"
                     />
                   </div>
                 )}

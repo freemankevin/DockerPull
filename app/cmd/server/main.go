@@ -47,6 +47,7 @@ func main() {
 	r.GET("/api/images/:id/logs", h.GetImageLogs)
 	r.POST("/api/images/:id/pull", h.PullImage)
 	r.POST("/api/images/:id/export", h.ExportImage)
+	r.GET("/api/images/check-platforms", h.CheckPlatforms)
 	r.GET("/api/config", h.GetConfig)
 	r.PUT("/api/config", h.UpdateConfig)
 	r.POST("/api/webhook/test", h.TestWebhook)

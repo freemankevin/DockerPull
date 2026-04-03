@@ -12,6 +12,7 @@ export const imagesApi = {
   pull: (id: number) => api.post(`/images/${id}/pull`),
   export: (id: number) => api.post(`/images/${id}/export`),
   logs: (id: number) => api.get(`/images/${id}/logs`),
+  checkPlatforms: (name: string, tag: string) => api.get(`/images/check-platforms`, { params: { name, tag } }),
 }
 
 export const configApi = {

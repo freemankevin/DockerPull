@@ -20,10 +20,10 @@ export default function Stats() {
   }, [])
 
   const cards = [
-    { title: 'Total Images', value: stats.total, icon: Package },
-    { title: 'Success', value: stats.success, icon: CheckCircle },
-    { title: 'Failed', value: stats.failed, icon: XCircle },
-    { title: 'Pending', value: stats.pending, icon: Clock },
+    { title: 'Total Images', value: stats.total, icon: Package, color: 'purple' },
+    { title: 'Success', value: stats.success, icon: CheckCircle, color: 'green' },
+    { title: 'Failed', value: stats.failed, icon: XCircle, color: 'red' },
+    { title: 'Pending', value: stats.pending, icon: Clock, color: 'yellow' },
   ]
 
   return (
@@ -32,18 +32,22 @@ export default function Stats() {
         <h1>Overview</h1>
       </div>
 
-      <div className="stats-grid">
-        {cards.map((card) => (
-          <div key={card.title} className="stat-card">
-            <div className="stat-card-content">
-              <div className="stat-info">
-                <p className="stat-title">{card.title}</p>
-                <p className="stat-value">{card.value}</p>
+      <div className="content-box">
+        <div className="stats-grid">
+          {cards.map((card) => (
+            <div key={card.title} className={`stat-card stat-card-${card.color}`}>
+              <div className="stat-card-content">
+                <div className="stat-info">
+                  <p className="stat-title">{card.title}</p>
+                  <p className="stat-value">{card.value}</p>
+                </div>
+                <div className={`stat-icon-wrapper stat-icon-${card.color}`}>
+                  <card.icon size={24} />
+                </div>
               </div>
-              <card.icon size={32} className="stat-icon" />
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )

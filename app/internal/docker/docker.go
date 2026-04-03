@@ -3,9 +3,12 @@ package docker
 import (
 	"context"
 	"docker-pull-manager/internal/config"
+	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -100,4 +103,97 @@ func (s *DockerService) Close() {
 	if s.cli != nil {
 		s.cli.Close()
 	}
+}
+
+type ManifestInfo struct {
+	SchemaVersion int    `json:"schemaVersion"`
+	MediaType     string `json:"mediaType"`
+	Manifests     []struct {
+		MediaType string `json:"mediaType"`
+		Size      int    `json:"size"`
+		Digest    string `json:"digest"`
+		Platform  struct {
+			Architecture string `json:"architecture"`
+			OS           string `json:"os"`
+			Variant      string `json:"variant,omitempty"`
+		} `json:"platform"`
+	} `json:"manifests"`
+}
+
+func (s *DockerService) GetImagePlatforms(imageName, tag string) ([]string, error) {
+	fullName := imageName
+	if tag != "" {
+		fullName = imageName + ":" + tag
+	}
+
+	cmd := exec.Command("docker", "manifest", "inspect", fullName)
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("failed to inspect manifest: %v", err)
+	}
+
+	var manifest ManifestInfo
+	if err := json.Unmarshal(output, &manifest); err != nil {
+		return nil, fmt.Errorf("failed to parse manifest: %v", err)
+	}
+
+	platforms := []string{}
+	for _, m := range manifest.Manifests {
+		platform := fmt.Sprintf("%s/%s", m.Platform.OS, m.Platform.Architecture)
+		if m.Platform.Variant != "" {
+			platform = fmt.Sprintf("%s/%s/%s", m.Platform.OS, m.Platform.Architecture, m.Platform.Variant)
+		}
+		platforms = append(platforms, platform)
+	}
+
+	return platforms, nil
+}
+
+func (s *DockerService) GetImagePlatformsFromRegistry(imageName, tag string) ([]string, error) {
+	repo := imageName
+	if strings.Contains(imageName, "/") {
+		parts := strings.Split(imageName, "/")
+		if len(parts) == 2 {
+			repo = parts[0] + "/" + parts[1]
+		} else if len(parts) == 3 {
+			repo = parts[1] + "/" + parts[2]
+		}
+	} else {
+		repo = "library/" + imageName
+	}
+
+	url := fmt.Sprintf("https://registry.hub.docker.com/v2/repositories/%s/tags/%s", repo, tag)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("failed to get image info from registry")
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var data struct {
+		Images []struct {
+			Architecture string `json:"architecture"`
+			OS           string `json:"os"`
+		} `json:"images"`
+	}
+
+	if err := json.Unmarshal(body, &data); err != nil {
+		return nil, err
+	}
+
+	platforms := []string{}
+	for _, img := range data.Images {
+		platform := fmt.Sprintf("%s/%s", img.OS, img.Architecture)
+		platforms = append(platforms, platform)
+	}
+
+	return platforms, nil
 }

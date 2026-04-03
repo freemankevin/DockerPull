@@ -190,3 +190,28 @@ func (h *Handler) GetStats(c *gin.Context) {
 		"pending": pending,
 	})
 }
+
+func (h *Handler) CheckPlatforms(c *gin.Context) {
+	name := c.Query("name")
+	tag := c.Query("tag")
+
+	if name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "name is required"})
+		return
+	}
+
+	if tag == "" {
+		tag = "latest"
+	}
+
+	platforms, err := h.dockerService.GetImagePlatforms(name, tag)
+	if err != nil {
+		platforms, err = h.dockerService.GetImagePlatformsFromRegistry(name, tag)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"platforms": []string{"linux/amd64", "linux/arm64"}})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"platforms": platforms})
+}

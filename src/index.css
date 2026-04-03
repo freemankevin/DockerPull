@@ -20,11 +20,12 @@
   --gray-900: #18181b;
   --gray-950: #09090b;
 
-  /* Brand Colors */
-  --purple-500: #a855f7;
-  --purple-600: #9333ea;
-  --purple-100: #f3e8ff;
-  --purple-50: #faf5ff;
+  /* Brand Colors - Railway Purple */
+  --purple-500: #7c3aed;
+  --purple-600: #6d28d9;
+  --purple-700: #5b21b6;
+  --purple-100: #ede9fe;
+  --purple-50: #f5f3ff;
 
   --green-500: #22c55e;
   --green-600: #16a34a;
@@ -74,7 +75,7 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 
-  /* Border Radius */
+  /* Border Radius - Railway Style */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
