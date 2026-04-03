@@ -32,12 +32,15 @@ export default function Login() {
     <div className="login-container">
       <div className="login-background">
         <img src="/background.jpg" alt="Background" className="login-bg-image" />
-        <div className="login-overlay">
-          <div className="login-brand">
-            <h1 className="login-title">DockPull</h1>
-            <p className="login-subtitle">A lightweight Docker image management system for pulling and organizing container images with ease</p>
-          </div>
+        <div className="login-overlay" />
+        <div className="login-brand">
+          <h1 className="login-title">DockPull</h1>
+          <p className="login-subtitle">A lightweight Docker image management system for pulling and organizing container images with ease</p>
         </div>
+        <div className="login-dots">
+          {Array.from({ length: 25 }).map((_, i) => <span key={i} />)}
+        </div>
+        <div className="login-version">© 2026 DockPull</div>
       </div>
       <div className="login-form-container">
         <div className="login-form-wrapper">
