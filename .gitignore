@@ -144,3 +144,11 @@ server
 
 # Kilo CLI local config
 .kilo/
+
+# App specific
+app/data/*.db
+app/exports/
+app/server.exe
+
+# Windows temp files
+nul
