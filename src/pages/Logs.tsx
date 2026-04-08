@@ -91,7 +91,7 @@ export default function Logs() {
   const uniqueActions = Array.from(new Set(logs.map(log => log.action)))
 
   return (
-    <div>
+    <div className="content-center">
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <h1>Logs</h1>

@@ -55,7 +55,7 @@ export default function Stats() {
   ]
 
   return (
-    <div>
+    <div className="content-center">
       {/* ── Page Header ── */}
       <div className="page-header">
         <h1>Overview</h1>

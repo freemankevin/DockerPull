@@ -19,7 +19,7 @@ export default function Settings() {
 
   if (loading || !config) {
     return (
-      <div>
+      <div className="content-center">
         <div className="page-header">
           <h1>Settings</h1>
         </div>
@@ -73,7 +73,7 @@ export default function Settings() {
   const getValue = (key: string) => formData[key] ?? config[key as keyof typeof config]
 
   return (
-    <div>
+    <div className="content-center">
       {/* ── Page Header ── */}
       <div className="page-header">
         <h1>Settings</h1>
@@ -140,7 +140,7 @@ export default function Settings() {
             <div className="form-group">
               <label>Default Platform</label>
               <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
-                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                <label className="checkbox-label">
                   <input
                     type="checkbox"
                     checked={(getValue('default_platform') || 'linux/amd64,linux/arm64').includes('linux/amd64')}
@@ -158,7 +158,7 @@ export default function Settings() {
                   />
                   <span>AMD64</span>
                 </label>
-                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                <label className="checkbox-label">
                   <input
                     type="checkbox"
                     checked={(getValue('default_platform') || 'linux/amd64,linux/arm64').includes('linux/arm64')}
