@@ -139,16 +139,44 @@ export default function Settings() {
 
             <div className="form-group">
               <label>Default Platform</label>
-              <Select
-                value={getValue('default_platform') || 'linux/amd64'}
-                onChange={(value) => setFormData({ ...formData, default_platform: value })}
-                options={[
-                  { value: 'linux/amd64', label: 'Linux/AMD64' },
-                  { value: 'linux/arm64', label: 'Linux/ARM64' },
-                  { value: 'linux/arm/v7', label: 'Linux/ARM v7' },
-                  { value: 'linux/386', label: 'Linux/386' },
-                ]}
-              />
+              <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
+                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={(getValue('default_platform') || 'linux/amd64,linux/arm64').includes('linux/amd64')}
+                    onChange={(e) => {
+                      const current = getValue('default_platform') || 'linux/amd64,linux/arm64'
+                      const platforms = current.split(',').filter((p: string) => p.trim())
+                      if (e.target.checked) {
+                        if (!platforms.includes('linux/amd64')) platforms.push('linux/amd64')
+                      } else {
+                        const idx = platforms.indexOf('linux/amd64')
+                        if (idx > -1) platforms.splice(idx, 1)
+                      }
+                      setFormData({ ...formData, default_platform: platforms.join(',') })
+                    }}
+                  />
+                  <span>AMD64</span>
+                </label>
+                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={(getValue('default_platform') || 'linux/amd64,linux/arm64').includes('linux/arm64')}
+                    onChange={(e) => {
+                      const current = getValue('default_platform') || 'linux/amd64,linux/arm64'
+                      const platforms = current.split(',').filter((p: string) => p.trim())
+                      if (e.target.checked) {
+                        if (!platforms.includes('linux/arm64')) platforms.push('linux/arm64')
+                      } else {
+                        const idx = platforms.indexOf('linux/arm64')
+                        if (idx > -1) platforms.splice(idx, 1)
+                      }
+                      setFormData({ ...formData, default_platform: platforms.join(',') })
+                    }}
+                  />
+                  <span>ARM64</span>
+                </label>
+              </div>
             </div>
 
             <div className="form-row">

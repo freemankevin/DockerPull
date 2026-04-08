@@ -28,7 +28,7 @@ func Load() *Config {
 		EnableWebhook:    false,
 		WebhookType:      "dingtalk",
 		ConcurrentPulls:  3,
-		DefaultPlatform:  "linux/amd64",
+		DefaultPlatform:  "linux/amd64,linux/arm64",
 		GzipCompression:  9,
 	}
 

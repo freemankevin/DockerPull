@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
-  FileText, Search, Clock, Package,
-  AlertCircle, CheckCircle, Loader2, RefreshCw,
+  FileText, Search, Package,
+  Loader2, RefreshCw,
 } from 'lucide-react'
 import { imagesApi } from '../api'
 import { useImages } from '../hooks/useImages'

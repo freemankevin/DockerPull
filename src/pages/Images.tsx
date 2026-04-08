@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Plus, Trash2, Download, RefreshCw, Clock,
@@ -6,6 +6,7 @@ import {
   Layers, ChevronRight, FileText, Edit, Copy,
 } from 'lucide-react'
 import { useImages } from '../hooks/useImages'
+import { useConfig } from '../hooks/useConfig'
 import { useNotification } from '../context/NotificationContext'
 import { imagesApi } from '../api'
 import type { Image } from '../types'
@@ -98,6 +99,7 @@ function StatusBadge({ status }: { status: Image['status'] }) {
 export default function Images() {
   const navigate = useNavigate()
   const { images, createImage, updateImage, deleteImage, pullImage, exportImage } = useImages()
+  const { config } = useConfig()
   const { addNotification } = useNotification()
   const [showModal, setShowModal] = useState(false)
   const [editMode, setEditMode] = useState(false)
@@ -109,6 +111,15 @@ export default function Images() {
     is_auto_export: false,
   })
   const [batchText, setBatchText] = useState('')
+
+  useEffect(() => {
+    if (config?.default_platform) {
+      const platforms = config.default_platform.split(',').filter(p => p.trim())
+      if (platforms.length > 0) {
+        setFormData(prev => ({ ...prev, platforms }))
+      }
+    }
+  }, [config])
 
   const handlePlatformToggle = (platform: string) => {
     setFormData(prev => ({
@@ -164,13 +175,21 @@ export default function Images() {
     }
 
     setShowModal(false)
-    setFormData({ fullName: '', platforms: ['linux/amd64', 'linux/arm64'], is_auto_export: false })
+    setFormData({ 
+      fullName: '', 
+      platforms: config?.default_platform?.split(',').filter(p => p.trim()) || ['linux/amd64', 'linux/arm64'], 
+      is_auto_export: false 
+    })
     setBatchText('')
   }
 
   const handleCloseModal = () => {
     setShowModal(false)
-    setFormData({ fullName: '', platforms: ['linux/amd64', 'linux/arm64'], is_auto_export: false })
+    setFormData({ 
+      fullName: '', 
+      platforms: config?.default_platform?.split(',').filter(p => p.trim()) || ['linux/amd64', 'linux/arm64'], 
+      is_auto_export: false 
+    })
     setBatchText('')
     setBatchMode(false)
     setEditMode(false)
@@ -396,9 +415,10 @@ export default function Images() {
             <Layers size={44} strokeWidth={1.25} />
           </div>
           <div className="empty-state-content">
-            <div className="empty-state-title">No images yet</div>
+            <div className="empty-state-title">Add a New Image</div>
             <div className="empty-state-description">
-              Pull and manage Docker images across multiple platforms. Click to add your first image.
+              Pull and manage Docker images across multiple platforms.<br />
+              Click to add your first image.
             </div>
           </div>
         </div>

@@ -755,7 +755,7 @@ body, * {
    Empty State – Railway dashed box
 ═══════════════════════════════════════════════════════════ */
 .empty-state {
-  border: 1.5px dashed var(--border-color);
+  border: 1.5px dashed #dcdce0;
   border-radius: var(--radius-lg);
   background: var(--bg-tertiary);
   padding: 56px 40px;
@@ -768,20 +768,11 @@ body, * {
 
 .empty-state.clickable {
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .empty-state.clickable:hover {
   border-color: var(--purple-600);
-  background: rgba(124, 58, 237, 0.05);
-}
-
-.empty-state.clickable:hover .empty-state-icon {
-  color: var(--purple-500);
-}
-
-.empty-state.clickable:hover .empty-state-title {
-  color: var(--purple-400);
 }
 
 .empty-state-icon {
@@ -1341,7 +1332,6 @@ select.form-control {
 ═══════════════════════════════════════════════════════════ */
 .content-box {
   background: var(--bg-primary);
-  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 28px;
   margin: 0 0 24px;
