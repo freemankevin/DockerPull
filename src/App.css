@@ -428,7 +428,7 @@ body, * {
  ═══════════════════════════════════════════════════════════ */
 .card-body {
   flex: 1;
-  padding: 24px;
+  padding: 50px 24px 24px 24px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -622,15 +622,25 @@ body, * {
 
 /* Primary – filled purple */
 .btn-primary {
-  background: var(--purple-600);
-  color: white;
-  border-color: var(--purple-600);
-  box-shadow: 0 1px 3px rgba(109, 40, 217, 0.4);
+  background: #853bce;
+  color: #fff3f2;
+  border-color: #853bce;
+  box-shadow: 0 1px 3px rgba(133, 59, 206, 0.35);
+  width: 80px;
+  height: 36px;
+  border-radius: 6px;
+  padding: 0;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--purple-700);
-  border-color: var(--purple-700);
+  background: #6e31aa;
+  border-color: #6e31aa;
+  color: #ffffff;
+  box-shadow: 0 2px 5px rgba(110, 49, 170, 0.45);
+}
+
+.btn-primary:hover:not(:disabled) {
+  color: #ffffff;
 }
 
 /* Success */

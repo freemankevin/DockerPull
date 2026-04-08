@@ -9,12 +9,32 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --text-h1: 28px;
+    --text-h2: 20px;
+    --text-h3: 16px;
+    --text-h4: 14px;
+    --text-h5: 12px;
+  }
+
   body {
     min-height: 100vh;
     font-family: 'DM Sans', sans-serif;
     background: #0d0a1a;
     display: flex;
   }
+
+  .text-h1 { font-size: var(--text-h1); }
+  .text-h2 { font-size: var(--text-h2); }
+  .text-h3 { font-size: var(--text-h3); }
+  .text-h4 { font-size: var(--text-h4); }
+  .text-h5 { font-size: var(--text-h5); }
+
+  .font-light    { font-weight: 300; }
+  .font-normal   { font-weight: 400; }
+  .font-medium   { font-weight: 500; }
+  .font-semibold { font-weight: 600; }
+  .font-bold     { font-weight: 700; }
 
   /* ── Left panel ── */
   .left {
@@ -123,18 +143,15 @@
   }
 
   .form-heading {
-    font-size: 28px;
-    font-weight: 500;
     color: #f0eaff;
     letter-spacing: -0.4px;
     margin-bottom: 8px;
+    margin-top: 50px;
   }
 
   .form-sub {
-    font-size: 14px;
     color: rgba(200, 185, 230, 0.5);
     margin-bottom: 40px;
-    font-weight: 300;
   }
 
   .field { margin-bottom: 20px; }
@@ -336,8 +353,8 @@
 
 <section class="right">
   <div class="form-wrapper">
-    <h1 class="form-heading">Sign In</h1>
-    <p class="form-sub">Enter your credentials to access the system</p>
+    <h1 class="form-heading text-h1 font-medium">Sign In</h1>
+    <p class="form-sub text-h4 font-light">Enter your credentials to access the system</p>
 
     <div class="field">
       <label for="username">Username</label>
