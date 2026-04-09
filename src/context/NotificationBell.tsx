@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
-import { Bell, X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react'
+import { Bell, X, CheckCircle2, XCircle, AlertTriangle, Info, Zap, Trash2 } from 'lucide-react'
 import { useNotification } from './NotificationContext'
 
 export function NotificationBell() {
   const { notifications, removeNotification, clearNotifications } = useNotification()
   const [showNotifications, setShowNotifications] = useState(false)
   const notificationRef = useRef<HTMLDivElement>(null)
+  const unreadCount = notifications.length
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -17,32 +18,30 @@ export function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const getIcon = (type: string) => {
+  // Railway-style: colored dot indicator per type
+  const getStatusDot = (type: string) => {
+    const colorMap: Record<string, string> = {
+      success: 'var(--green-500)',
+      error:   'var(--red-500)',
+      warning: 'var(--yellow-500)',
+      info:    'var(--blue-500)',
+    }
+    return (
+      <span
+        className="notif-status-dot"
+        style={{ background: colorMap[type] ?? colorMap.info }}
+      />
+    )
+  }
+
+  // Railway-style: icon per type, no background box
+  const getTypeIcon = (type: string) => {
+    const props = { size: 15, strokeWidth: 2 }
     switch (type) {
-      case 'success':
-        return (
-          <div className="notification-icon-bg notification-icon-success">
-            <CheckCircle size={14} />
-          </div>
-        )
-      case 'error':
-        return (
-          <div className="notification-icon-bg notification-icon-error">
-            <AlertCircle size={14} />
-          </div>
-        )
-      case 'warning':
-        return (
-          <div className="notification-icon-bg notification-icon-warning">
-            <AlertTriangle size={14} />
-          </div>
-        )
-      default:
-        return (
-          <div className="notification-icon-bg notification-icon-info">
-            <Info size={14} />
-          </div>
-        )
+      case 'success': return <CheckCircle2 {...props} style={{ color: 'var(--green-500)' }} />
+      case 'error':   return <XCircle      {...props} style={{ color: 'var(--red-500)' }} />
+      case 'warning': return <AlertTriangle {...props} style={{ color: 'var(--yellow-500)' }} />
+      default:        return <Info          {...props} style={{ color: 'var(--blue-500)' }} />
     }
   }
 
@@ -53,79 +52,119 @@ export function NotificationBell() {
     const hours = Math.floor(diff / 3600000)
     const days = Math.floor(diff / 86400000)
 
-    if (minutes < 1) return 'Just now'
+    if (minutes < 1) return 'just now'
     if (minutes < 60) return `${minutes}m ago`
     if (hours < 24) return `${hours}h ago`
     if (days < 7) return `${days}d ago`
     return new Date(time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }
 
+  const typeLabel: Record<string, string> = {
+    success: 'Success',
+    error:   'Error',
+    warning: 'Warning',
+    info:    'Info',
+  }
+
   return (
-    <div className="notification-wrapper" ref={notificationRef}>
+    <div className="notif-wrapper" ref={notificationRef}>
+      {/* ── Bell Trigger ── */}
       <button
-        className="btn btn-ghost notification-btn"
-        onClick={() => setShowNotifications(!showNotifications)}
+        className={`notif-trigger ${showNotifications ? 'notif-trigger--active' : ''}`}
+        onClick={() => setShowNotifications(prev => !prev)}
         title="Notifications"
+        aria-label="Open notifications"
       >
-        <Bell size={18} strokeWidth={1.75} />
-        {notifications.length > 0 && (
-          <span className="notification-badge">
-            {notifications.length > 9 ? '9+' : notifications.length}
+        <Bell size={16} strokeWidth={1.75} />
+        {unreadCount > 0 && (
+          <span className="notif-badge" aria-label={`${unreadCount} notifications`}>
+            {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
+
+      {/* ── Dropdown Panel ── */}
       {showNotifications && (
-        <div className="notification-dropdown">
-          <div className="notification-header">
-            <span className="notification-title">
-              Notifications
-              {notifications.length > 0 && (
-                <span className="notification-count">{notifications.length}</span>
+        <div className="notif-panel" role="dialog" aria-label="Notifications panel">
+          {/* Panel Header */}
+          <div className="notif-panel-header">
+            <div className="notif-panel-title">
+              <Zap size={13} strokeWidth={2.5} className="notif-zap-icon" />
+              <span>Activity</span>
+              {unreadCount > 0 && (
+                <span className="notif-panel-count">{unreadCount}</span>
               )}
-            </span>
-            {notifications.length > 0 && (
+            </div>
+            {unreadCount > 0 && (
               <button
-                className="notification-clear-btn"
+                className="notif-clear-btn"
                 onClick={clearNotifications}
+                title="Clear all notifications"
               >
-                Clear all
+                <Trash2 size={12} strokeWidth={2} />
+                <span>Clear all</span>
               </button>
             )}
           </div>
-          <div className="notification-list">
-            {notifications.length === 0 ? (
-              <div className="notification-empty">
-                <div className="notification-empty-icon">
-                  <Bell size={28} strokeWidth={1.5} />
+
+          {/* Panel Body */}
+          <div className="notif-list" role="list">
+            {unreadCount === 0 ? (
+              <div className="notif-empty">
+                <div className="notif-empty-icon-wrap">
+                  <Bell size={20} strokeWidth={1.5} />
                 </div>
-                <div className="notification-empty-title">No notifications</div>
-                <div className="notification-empty-desc">You're all caught up!</div>
+                <p className="notif-empty-title">All caught up</p>
+                <p className="notif-empty-desc">No new notifications</p>
               </div>
             ) : (
-              notifications.map(notification => (
-                <div key={notification.id} className={`notification-item notification-item-${notification.type}`}>
-                  <div className="notification-item-content">
-                    {getIcon(notification.type)}
-                    <div className="notification-item-body">
-                      <div className="notification-item-message">
-                        {notification.message}
-                      </div>
-                      <div className="notification-item-time">
-                        {formatTime(notification.time)}
-                      </div>
-                    </div>
+              notifications.map((n, idx) => (
+                <div
+                  key={n.id}
+                  className={`notif-item notif-item--${n.type}`}
+                  role="listitem"
+                  style={{ animationDelay: `${idx * 30}ms` }}
+                >
+                  {/* Left: status dot */}
+                  <div className="notif-item-dot-col">
+                    {getStatusDot(n.type)}
+                    {idx < notifications.length - 1 && (
+                      <span className="notif-item-connector" />
+                    )}
                   </div>
+
+                  {/* Center: icon + content */}
+                  <div className="notif-item-body">
+                    <div className="notif-item-header-row">
+                      <span className="notif-item-icon">{getTypeIcon(n.type)}</span>
+                      <span className="notif-item-type-label">{typeLabel[n.type] ?? 'Info'}</span>
+                      <span className="notif-item-time">{formatTime(n.time)}</span>
+                    </div>
+                    <p className="notif-item-message">{n.message}</p>
+                  </div>
+
+                  {/* Right: dismiss */}
                   <button
-                    className="notification-close"
-                    onClick={() => removeNotification(notification.id)}
+                    className="notif-item-dismiss"
+                    onClick={() => removeNotification(n.id)}
                     title="Dismiss"
+                    aria-label="Dismiss notification"
                   >
-                    <X size={14} />
+                    <X size={12} strokeWidth={2.5} />
                   </button>
                 </div>
               ))
             )}
           </div>
+
+          {/* Panel Footer */}
+          {unreadCount > 0 && (
+            <div className="notif-panel-footer">
+              <span className="notif-footer-hint">
+                {unreadCount} event{unreadCount !== 1 ? 's' : ''} recorded this session
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>
