@@ -1,246 +1,381 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import {
-  FileText, Search, Package,
-  Loader2, RefreshCw,
-} from 'lucide-react'
+import { Search, RefreshCw, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
 import { imagesApi } from '../api'
 import { useImages } from '../hooks/useImages'
-import Select from '../components/Select'
 import type { Image, ImageLog } from '../types'
 
-const actionColors: Record<string, string> = {
-  CREATE: 'var(--blue-500)',
-  UPDATE: 'var(--yellow-500)',
-  PULL_START: 'var(--purple-500)',
-  PULL_SUCCESS: 'var(--green-500)',
-  PULL_FAILED: 'var(--red-500)',
-  EXPORT_START: 'var(--purple-500)',
-  EXPORT_SUCCESS: 'var(--green-500)',
-  EXPORT_FAILED: 'var(--red-500)',
+const ACTION_META: Record<string, { label: string; color: string; bg: string }> = {
+  CREATE:         { label: 'Created',        color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
+  UPDATE:         { label: 'Updated',        color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  PULL_START:     { label: 'Pull Started',   color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+  PULL_SUCCESS:   { label: 'Pull Success',   color: '#22c55e', bg: 'rgba(34,197,94,0.1)'  },
+  PULL_FAILED:    { label: 'Pull Failed',    color: '#ef4444', bg: 'rgba(239,68,68,0.1)'  },
+  EXPORT_START:   { label: 'Export Started', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+  EXPORT_SUCCESS: { label: 'Export Success', color: '#22c55e', bg: 'rgba(34,197,94,0.1)'  },
+  EXPORT_FAILED:  { label: 'Export Failed',  color: '#ef4444', bg: 'rgba(239,68,68,0.1)'  },
+  PLATFORM_CHANGED: { label: 'Platform Changed', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
 }
 
-const actionLabels: Record<string, string> = {
-  CREATE: 'Created',
-  UPDATE: 'Updated',
-  PULL_START: 'Pull Started',
-  PULL_SUCCESS: 'Pull Success',
-  PULL_FAILED: 'Pull Failed',
-  EXPORT_START: 'Export Started',
-  EXPORT_SUCCESS: 'Export Success',
-  EXPORT_FAILED: 'Export Failed',
+const PAGE_SIZE = 20
+
+const ALL_ACTIONS = [
+  { value: 'all', label: 'All Actions' },
+  ...Object.entries(ACTION_META).map(([value, { label }]) => ({ value, label }))
+]
+
+function ActionBadge({ action }: { action: string }) {
+  const meta = ACTION_META[action] || { label: action, color: 'var(--text-secondary)', bg: 'var(--bg-tertiary)' }
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      padding: '2px 8px', borderRadius: '4px',
+      fontSize: '11.5px', fontWeight: 500,
+      color: meta.color, background: meta.bg,
+      whiteSpace: 'nowrap', flexShrink: 0,
+      letterSpacing: '0.01em',
+    }}>
+      {meta.label}
+    </span>
+  )
+}
+
+function FilterChip({
+  label, value, options, onChange
+}: {
+  label: string
+  value: string
+  options: { value: string; label: string }[]
+  onChange: (v: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const selected = options.find(o => o.value === value)
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '6px',
+          padding: '5px 12px', height: '32px',
+          border: value !== 'all' ? '1px solid var(--purple-600)' : '1px solid var(--border-color)',
+          borderRadius: '6px', cursor: 'pointer',
+          background: value !== 'all' ? 'var(--accent-bg)' : 'var(--bg-tertiary)',
+          color: value !== 'all' ? 'var(--purple-400)' : 'var(--text-secondary)',
+          fontSize: '13px', fontWeight: 400,
+          whiteSpace: 'nowrap', transition: 'all .12s',
+        }}
+      >
+        {value === 'all' ? label : selected?.label}
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style={{ opacity: .5, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .12s' }}>
+          <path d="M5 7L1 3h8z"/>
+        </svg>
+      </button>
+      {open && (
+        <div
+          style={{
+            position: 'absolute', top: 'calc(100% + 4px)', left: 0,
+            minWidth: '180px', background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-color)', borderRadius: '8px',
+            boxShadow: 'var(--shadow-lg)', zIndex: 100, overflow: 'hidden',
+            animation: 'fadeIn .12s ease',
+          }}
+          onMouseLeave={() => setOpen(false)}
+        >
+          {options.map(opt => (
+            <div
+              key={opt.value}
+              onClick={() => { onChange(opt.value); setOpen(false) }}
+              style={{
+                padding: '8px 12px', fontSize: '13px', cursor: 'pointer',
+                color: opt.value === value ? 'var(--purple-400)' : 'var(--text-primary)',
+                background: opt.value === value ? 'var(--accent-bg)' : 'transparent',
+                transition: 'background .1s',
+              }}
+              onMouseEnter={e => { if (opt.value !== value) (e.currentTarget as HTMLElement).style.background = 'var(--bg-tertiary)' }}
+              onMouseLeave={e => { if (opt.value !== value) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function Logs() {
   const [searchParams] = useSearchParams()
   const imageIdFromUrl = searchParams.get('imageId')
   const { images } = useImages()
-  
+
   const [logs, setLogs] = useState<ImageLog[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedImageId, setSelectedImageId] = useState<string>(imageIdFromUrl || 'all')
   const [selectedAction, setSelectedAction] = useState<string>('all')
+  const [page, setPage] = useState(0)
 
   useEffect(() => {
-    if (imageIdFromUrl) {
-      setSelectedImageId(imageIdFromUrl)
-    }
+    if (imageIdFromUrl) setSelectedImageId(imageIdFromUrl)
   }, [imageIdFromUrl])
 
   useEffect(() => {
     fetchLogs()
-  }, [selectedImageId])
+  }, [selectedImageId, images.length])
+
+  // reset page on filter change
+  useEffect(() => { setPage(0) }, [searchQuery, selectedAction, selectedImageId])
 
   const fetchLogs = async () => {
     setLoading(true)
     try {
       if (selectedImageId === 'all') {
-        const allLogs: ImageLog[] = []
+        const all: ImageLog[] = []
         for (const img of images) {
           const res = await imagesApi.logs(img.id)
-          allLogs.push(...(res.data || []))
+          all.push(...(res.data || []))
         }
-        allLogs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        setLogs(allLogs)
+        all.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        setLogs(all)
       } else {
         const res = await imagesApi.logs(parseInt(selectedImageId))
-        const data = res.data || []
-        data.sort((a: ImageLog, b: ImageLog) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        const data: ImageLog[] = res.data || []
+        data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         setLogs(data)
       }
-    } catch (err) {
+    } catch {
       setLogs([])
     } finally {
       setLoading(false)
     }
   }
 
-  const filteredLogs = logs.filter(log => {
-    const matchesSearch = searchQuery === '' || 
-      log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.action.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesAction = selectedAction === 'all' || log.action === selectedAction
-    return matchesSearch && matchesAction
+  const getImageInfo = (id: number): Image | undefined => images.find(img => img.id === id)
+
+  const imageOptions = [
+    { value: 'all', label: 'All Images' },
+    ...images.map(img => ({ value: String(img.id), label: `${img.name}:${img.tag}` }))
+  ]
+
+  const filtered = logs.filter(log => {
+    const q = searchQuery.toLowerCase()
+    const matchSearch = !q || log.message.toLowerCase().includes(q) || log.action.toLowerCase().includes(q)
+    const matchAction = selectedAction === 'all' || log.action === selectedAction
+    return matchSearch && matchAction
   })
 
-  const getImageInfo = (imageId: number): Image | undefined => {
-    return images.find(img => img.id === imageId)
-  }
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
 
-  const uniqueActions = Array.from(new Set(logs.map(log => log.action)))
+  const formatTime = (ts: string) => {
+    const d = new Date(ts)
+    return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  }
 
   return (
     <div className="content-center">
+      {/* Header */}
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <h1>Logs</h1>
-          {logs.length > 0 && (
+          {!loading && filtered.length > 0 && (
             <span style={{
-              background: 'var(--bg-tertiary)',
-              border: '1px solid var(--border-color)',
-              color: 'var(--text-tertiary)',
-              borderRadius: '20px',
-              padding: '2px 8px',
-              fontSize: '12px',
-              fontWeight: 500,
-            }}>
-              {filteredLogs.length}
-            </span>
+              background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
+              color: 'var(--text-tertiary)', borderRadius: '20px',
+              padding: '2px 8px', fontSize: '12px', fontWeight: 500,
+            }}>{filtered.length}</span>
           )}
         </div>
-        <div className="page-header-actions">
-          <button className="btn btn-secondary" onClick={fetchLogs} disabled={loading}>
-            <RefreshCw size={14} className={loading ? 'spin' : ''} />
-            Refresh
-          </button>
-        </div>
+        <button className="btn btn-secondary" onClick={fetchLogs} disabled={loading} style={{ height: '32px', padding: '0 12px', fontSize: '13px' }}>
+          <RefreshCw size={13} className={loading ? 'spin' : ''} />
+          Refresh
+        </button>
       </div>
 
-      <div className="content-box">
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-          <div style={{ flex: '1', minWidth: '200px', position: 'relative' }}>
-            <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search logs..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ paddingLeft: '36px' }}
-            />
-          </div>
-          
-          <Select
-            value={selectedImageId}
-            onChange={setSelectedImageId}
-            options={[
-              { value: 'all', label: 'All Images' },
-              ...images.map(img => ({ value: String(img.id), label: `${img.name}:${img.tag}` }))
-            ]}
-            placeholder="Select image"
-            style={{ width: '200px' }}
-          />
-
-          <Select
-            value={selectedAction}
-            onChange={setSelectedAction}
-            options={[
-              { value: 'all', label: 'All Actions' },
-              ...uniqueActions.map(action => ({ value: action, label: actionLabels[action] || action }))
-            ]}
-            placeholder="Select action"
-            style={{ width: '160px' }}
+      {/* Filter Bar — Railway style */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '8px',
+        marginBottom: '12px', flexWrap: 'wrap',
+      }}>
+        {/* Search */}
+        <div style={{ position: 'relative', flex: '1', minWidth: '200px', maxWidth: '360px' }}>
+          <Search size={13} style={{
+            position: 'absolute', left: '10px', top: '50%',
+            transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none',
+          }} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search logs..."
+            style={{
+              width: '100%', height: '32px',
+              padding: '0 10px 0 30px',
+              border: '1px solid var(--border-color)', borderRadius: '6px',
+              background: 'var(--bg-tertiary)', color: 'var(--text-primary)',
+              fontSize: '13px', outline: 'none',
+              transition: 'border-color .15s',
+            }}
+            onFocus={e => (e.target.style.borderColor = 'var(--purple-600)')}
+            onBlur={e => (e.target.style.borderColor = 'var(--border-color)')}
           />
         </div>
 
+        <div style={{ width: '1px', height: '20px', background: 'var(--border-color)', margin: '0 2px' }} />
+
+        <FilterChip label="All Images" value={selectedImageId} options={imageOptions} onChange={setSelectedImageId} />
+        <FilterChip label="All Actions" value={selectedAction} options={ALL_ACTIONS} onChange={setSelectedAction} />
+
+        {(selectedImageId !== 'all' || selectedAction !== 'all') && (
+          <button
+            onClick={() => { setSelectedImageId('all'); setSelectedAction('all') }}
+            style={{
+              padding: '5px 10px', height: '32px', fontSize: '12px',
+              border: 'none', borderRadius: '6px', cursor: 'pointer',
+              background: 'transparent', color: 'var(--text-muted)',
+              transition: 'color .12s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
+      {/* Log Table */}
+      <div style={{
+        border: '1px solid var(--border-color)',
+        borderRadius: '10px', overflow: 'hidden',
+        background: 'var(--bg-primary)',
+      }}>
+        {/* Table Header */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '160px 130px 1fr 160px',
+          padding: '8px 16px',
+          background: 'var(--bg-tertiary)',
+          borderBottom: '1px solid var(--border-color)',
+          fontSize: '11.5px', fontWeight: 500,
+          color: 'var(--text-muted)', letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+        }}>
+          <span>Time</span>
+          <span>Action</span>
+          <span>Message</span>
+          <span>Image</span>
+        </div>
+
+        {/* Rows */}
         {loading ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px', color: 'var(--text-muted)' }}>
-            <Loader2 size={20} className="spin" />
-            <span style={{ marginLeft: '10px' }}>Loading logs...</span>
+          <div style={{ padding: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: 'var(--text-muted)', fontSize: '13px' }}>
+            <RefreshCw size={15} className="spin" />
+            Loading logs...
           </div>
-        ) : filteredLogs.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">
-              <FileText size={44} strokeWidth={1.25} />
-            </div>
-            <div className="empty-state-content">
-              <div className="empty-state-title">No logs found</div>
-              <div className="empty-state-description">
-                {searchQuery || selectedAction !== 'all' 
-                  ? 'Try adjusting your search or filters'
-                  : 'Logs will appear here as images are processed'}
-              </div>
+        ) : paginated.length === 0 ? (
+          <div style={{ padding: '60px', textAlign: 'center' }}>
+            <FileText size={36} style={{ color: 'var(--text-muted)', margin: '0 auto 12px', display: 'block', strokeWidth: 1.25 }} />
+            <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '4px' }}>No logs found</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+              {searchQuery || selectedAction !== 'all' || selectedImageId !== 'all'
+                ? 'Try adjusting your filters'
+                : 'Logs will appear here as images are processed'}
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {filteredLogs.map((log) => {
-              const img = getImageInfo(log.image_id)
-              return (
-                <div 
-                  key={log.id} 
-                  style={{ 
-                    padding: '14px 16px', 
-                    background: 'var(--bg-tertiary)', 
-                    borderRadius: '10px', 
-                    border: '1px solid var(--border-color)',
-                    transition: 'border-color 0.15s ease',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '8px',
-                      background: 'var(--accent-bg)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}>
-                      <Package size={15} style={{ color: 'var(--purple-400)' }} />
-                    </div>
-                    
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                        <span style={{ 
-                          fontSize: '13px', 
-                          fontWeight: 600, 
-                          color: actionColors[log.action] || 'var(--text-primary)',
-                        }}>
-                          {actionLabels[log.action] || log.action}
-                        </span>
-                        {img && (
-                          <span style={{
-                            fontSize: '12px',
-                            fontFamily: 'var(--font-mono)',
-                            color: 'var(--text-secondary)',
-                            background: 'var(--bg-secondary)',
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                          }}>
-                            {img.name}:{img.tag}
-                          </span>
-                        )}
-                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: 'auto' }}>
-                          {new Date(log.created_at).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit',
-                          })}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.5 }}>
-                        {log.message}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+          paginated.map((log, i) => {
+            const img = getImageInfo(log.image_id)
+            return (
+              <div
+                key={log.id}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '160px 130px 1fr 160px',
+                  padding: '10px 16px',
+                  borderBottom: i < paginated.length - 1 ? '1px solid var(--border-color)' : 'none',
+                  alignItems: 'center', gap: '12px',
+                  transition: 'background .1s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-tertiary)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                {/* Time */}
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+                  {formatTime(log.created_at)}
+                </span>
+
+                {/* Action badge */}
+                <div><ActionBadge action={log.action} /></div>
+
+                {/* Message */}
+                <span style={{
+                  fontSize: '13px', color: 'var(--text-secondary)',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }} title={log.message}>
+                  {log.message}
+                </span>
+
+                {/* Image */}
+                {img ? (
+                  <span style={{
+                    fontSize: '12px', fontFamily: 'var(--font-mono)',
+                    color: 'var(--text-tertiary)',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }} title={`${img.name}:${img.tag}`}>
+                    {img.name}:{img.tag}
+                  </span>
+                ) : (
+                  <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>—</span>
+                )}
+              </div>
+            )
+          })
+        )}
+
+        {/* Pagination — Railway style */}
+        {!loading && totalPages > 1 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 16px',
+            borderTop: '1px solid var(--border-color)',
+            background: 'var(--bg-tertiary)',
+          }}>
+            <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
+              {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of {filtered.length}
+            </span>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <button
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '4px',
+                  padding: '4px 10px', height: '28px',
+                  border: '1px solid var(--border-color)', borderRadius: '5px',
+                  background: 'transparent', cursor: page === 0 ? 'not-allowed' : 'pointer',
+                  color: page === 0 ? 'var(--text-muted)' : 'var(--text-secondary)',
+                  fontSize: '12.5px', opacity: page === 0 ? .4 : 1,
+                  transition: 'all .12s',
+                }}
+              >
+                <ChevronLeft size={13} /> Older
+              </button>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '4px',
+                  padding: '4px 10px', height: '28px',
+                  border: '1px solid var(--border-color)', borderRadius: '5px',
+                  background: 'transparent', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer',
+                  color: page >= totalPages - 1 ? 'var(--text-muted)' : 'var(--text-secondary)',
+                  fontSize: '12.5px', opacity: page >= totalPages - 1 ? .4 : 1,
+                  transition: 'all .12s',
+                }}
+              >
+                Newer <ChevronRight size={13} />
+              </button>
+            </div>
           </div>
         )}
       </div>

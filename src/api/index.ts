@@ -46,6 +46,10 @@ export const configApi = {
   update: (data: any) => api.put('/config', data),
 }
 
+export const browseApi = {
+  list: (path?: string) => api.get('/browse', { params: { path } }),
+}
+
 export const webhookApi = {
   test: () => api.post('/webhook/test'),
 }

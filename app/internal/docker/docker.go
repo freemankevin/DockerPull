@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"docker-pull-manager/internal/config"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,7 +12,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -40,6 +40,16 @@ func (s *DockerService) PullImage(ctx context.Context, fullName, platform string
 		options.Platform = platform
 	}
 
+	if strings.HasPrefix(fullName, "ghcr.io/") && s.cfg.GhcrToken != "" {
+		authConfig := types.AuthConfig{
+			Username:      "oauth2",
+			Password:      s.cfg.GhcrToken,
+			ServerAddress: "ghcr.io",
+		}
+		authJSON, _ := json.Marshal(authConfig)
+		options.RegistryAuth = base64.URLEncoding.EncodeToString(authJSON)
+	}
+
 	reader, err := s.cli.ImagePull(ctx, fullName, options)
 	if err != nil {
 		return err
@@ -50,10 +60,54 @@ func (s *DockerService) PullImage(ctx context.Context, fullName, platform string
 	return err
 }
 
-func (s *DockerService) ExportImage(ctx context.Context, fullName string) (string, error) {
-	timestamp := time.Now().Format("20060102_150405")
-	imageName := strings.ReplaceAll(strings.ReplaceAll(fullName, "/", "_"), ":", "_")
-	filename := fmt.Sprintf("%s_%s.tar.gz", imageName, timestamp)
+func detectRegistry(imageName string) string {
+	parts := strings.Split(imageName, "/")
+
+	if len(parts) == 1 {
+		return "docker.io"
+	}
+
+	if len(parts) >= 2 {
+		firstPart := parts[0]
+		if strings.Contains(firstPart, ".") || firstPart == "localhost" {
+			return firstPart
+		}
+		return "docker.io"
+	}
+
+	return "docker.io"
+}
+
+func extractImageName(imageName string) string {
+	parts := strings.Split(imageName, "/")
+
+	if len(parts) == 1 {
+		return parts[0]
+	}
+
+	if len(parts) >= 2 {
+		firstPart := parts[0]
+		if strings.Contains(firstPart, ".") || firstPart == "localhost" {
+			return strings.Join(parts[1:], "_")
+		}
+		return strings.Join(parts, "_")
+	}
+
+	return imageName
+}
+
+func (s *DockerService) ExportImage(ctx context.Context, fullName, imageName, tag, platform string) (string, error) {
+	registry := detectRegistry(imageName)
+
+	platformClean := strings.ReplaceAll(platform, "/", "_")
+
+	imageNameClean := extractImageName(imageName)
+	tagClean := tag
+	if tagClean == "" {
+		tagClean = "latest"
+	}
+
+	filename := fmt.Sprintf("%s-%s-%s-%s.tar.gz", registry, imageNameClean, tagClean, platformClean)
 	exportPath := filepath.Join(s.cfg.ExportPath, filename)
 
 	if err := os.MkdirAll(s.cfg.ExportPath, 0755); err != nil {

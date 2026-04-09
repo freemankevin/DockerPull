@@ -6,6 +6,8 @@ import (
 	"docker-pull-manager/internal/models"
 	"docker-pull-manager/internal/service"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -169,6 +171,7 @@ func (h *Handler) UpdateConfig(c *gin.Context) {
 	if req.GzipCompression > 0 && req.GzipCompression <= 9 {
 		h.cfg.GzipCompression = req.GzipCompression
 	}
+	h.cfg.GhcrToken = req.GhcrToken
 
 	if err := h.cfg.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -236,4 +239,45 @@ func (h *Handler) CheckPlatforms(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"platforms": platforms})
+}
+
+func (h *Handler) BrowseDirectory(c *gin.Context) {
+	path := c.Query("path")
+	if path == "" {
+		path = "."
+	}
+
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid path"})
+		return
+	}
+
+	entries, err := os.ReadDir(absPath)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var dirs []map[string]interface{}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			dirs = append(dirs, map[string]interface{}{
+				"name":  entry.Name(),
+				"path":  filepath.Join(absPath, entry.Name()),
+				"isDir": true,
+			})
+		}
+	}
+
+	parent := ""
+	if absPath != "/" && absPath != "\\" {
+		parent = filepath.Dir(absPath)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"current": absPath,
+		"parent":  parent,
+		"dirs":    dirs,
+	})
 }

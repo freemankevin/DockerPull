@@ -86,6 +86,7 @@ func main() {
 		api.GET("/images/check-platforms", h.CheckPlatforms)
 		api.GET("/config", h.GetConfig)
 		api.PUT("/config", h.UpdateConfig)
+		api.GET("/browse", h.BrowseDirectory)
 		api.POST("/webhook/test", h.TestWebhook)
 		api.GET("/stats", h.GetStats)
 	}

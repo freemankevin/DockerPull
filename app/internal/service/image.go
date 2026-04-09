@@ -102,7 +102,7 @@ func (s *ImageService) ExportImage(imageID int64) (string, error) {
 	ctx := context.Background()
 	s.logAction(imageID, "EXPORT_START", fmt.Sprintf("Starting export for %s", img.FullName))
 
-	exportPath, err := s.docker.ExportImage(ctx, img.FullName)
+	exportPath, err := s.docker.ExportImage(ctx, img.FullName, img.Name, img.Tag, img.Platform)
 	if err != nil {
 		s.logAction(imageID, "EXPORT_FAILED", fmt.Sprintf("Export failed: %v", err))
 		return "", err

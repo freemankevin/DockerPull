@@ -4,7 +4,7 @@ import type { Config } from '../types'
 
 export function useConfig() {
   const [config, setConfig] = useState<Config | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const fetchConfig = useCallback(async () => {
@@ -25,14 +25,8 @@ export function useConfig() {
   }, [fetchConfig])
 
   const updateConfig = async (data: Partial<Config>) => {
-    try {
-      await configApi.update(data)
-      await fetchConfig()
-      return true
-    } catch (err: any) {
-      setError(err.message)
-      return false
-    }
+    await configApi.update(data)
+    await fetchConfig()
   }
 
   return {

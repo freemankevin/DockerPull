@@ -17,6 +17,7 @@ type Config struct {
 	ConcurrentPulls  int    `json:"concurrent_pulls"`
 	DefaultPlatform  string `json:"default_platform"`
 	GzipCompression  int    `json:"gzip_compression"` // 1-9
+	GhcrToken        string `json:"ghcr_token"`       // GitHub Container Registry token
 }
 
 func Load() *Config {
@@ -48,6 +49,10 @@ func Load() *Config {
 func (c *Config) Save() error {
 	configDir := "./config"
 	configFile := filepath.Join(configDir, "config.json")
+
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		return err
+	}
 
 	data, err := json.MarshalIndent(c, "", "  ")
 	if err != nil {

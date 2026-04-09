@@ -1,18 +1,19 @@
 import { useState } from 'react'
 import {
   Save, FlaskConical, Folder, CheckCircle, AlertCircle,
-  Settings as SettingsIcon, Bell, RefreshCw, Cpu
+  Settings as SettingsIcon, Bell, RefreshCw, Cpu, ChevronRight, X, Key
 } from 'lucide-react'
 import { useConfig } from '../hooks/useConfig'
-import { webhookApi } from '../api'
+import { webhookApi, browseApi } from '../api'
 import Select from '../components/Select'
 
 type ToastType = 'success' | 'error' | null
-type TabId = 'general' | 'retry' | 'webhook'
+type TabId = 'general' | 'retry' | 'webhook' | 'registry'
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: 'general', label: 'General',  icon: <SettingsIcon size={14} /> },
   { id: 'retry',   label: 'Retry',    icon: <RefreshCw size={14} /> },
+  { id: 'registry', label: 'Registry', icon: <Key size={14} /> },
   { id: 'webhook', label: 'Webhook',  icon: <Bell size={14} /> },
 ]
 
@@ -42,6 +43,11 @@ export default function Settings() {
   const [formData, setFormData] = useState<any>({})
   const [toast, setToast] = useState<{ type: ToastType; message: string } | null>(null)
   const [activeTab, setActiveTab] = useState<TabId>('general')
+  const [browseOpen, setBrowseOpen] = useState(false)
+  const [browseDirs, setBrowseDirs] = useState<any[]>([])
+  const [browseCurrent, setBrowseCurrent] = useState('')
+  const [browseParent, setBrowseParent] = useState('')
+  const [browseLoading, setBrowseLoading] = useState(false)
 
   const showToast = (type: 'success' | 'error', message: string) => {
     setToast({ type, message })
@@ -74,11 +80,38 @@ export default function Settings() {
   }
 
   const handleBrowseFolder = async () => {
+    setBrowseLoading(true)
+    setBrowseOpen(true)
     try {
-      // @ts-ignore
-      const dirHandle = await window.showDirectoryPicker?.()
-      if (dirHandle) setFormData({ ...formData, export_path: dirHandle.name })
-    } catch { /* cancelled */ }
+      const res = await browseApi.list(getValue('export_path') || '.')
+      setBrowseCurrent(res.data.current)
+      setBrowseParent(res.data.parent)
+      setBrowseDirs(res.data.dirs || [])
+    } catch (err: any) {
+      showToast('error', 'Failed to browse: ' + err.message)
+      setBrowseOpen(false)
+    } finally {
+      setBrowseLoading(false)
+    }
+  }
+
+  const handleBrowseDir = async (path: string) => {
+    setBrowseLoading(true)
+    try {
+      const res = await browseApi.list(path)
+      setBrowseCurrent(res.data.current)
+      setBrowseParent(res.data.parent)
+      setBrowseDirs(res.data.dirs || [])
+    } catch (err: any) {
+      showToast('error', 'Failed to browse: ' + err.message)
+    } finally {
+      setBrowseLoading(false)
+    }
+  }
+
+  const handleSelectDir = () => {
+    setFormData({ ...formData, export_path: browseCurrent })
+    setBrowseOpen(false)
   }
 
   if (loading || !config) {
@@ -101,7 +134,6 @@ export default function Settings() {
     <div className="content-center">
       <div className="page-header"><h1>Settings</h1></div>
 
-      {/* Toast */}
       {toast && (
         <div style={{
           position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
@@ -119,14 +151,86 @@ export default function Settings() {
         </div>
       )}
 
-      {/* Settings Panel */}
+      {browseOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', zIndex: 10000,
+        }} onClick={() => setBrowseOpen(false)}>
+          <div style={{
+            background: 'var(--bg-primary)', borderRadius: 'var(--radius-lg)',
+            width: '480px', maxHeight: '80vh', overflow: 'hidden',
+            border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-lg)',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{
+              padding: '16px', borderBottom: '1px solid var(--border-color)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>Select Directory</div>
+              <button onClick={() => setBrowseOpen(false)} style={{
+                border: 'none', background: 'transparent', cursor: 'pointer',
+                color: 'var(--text-muted)', padding: '4px',
+              }}><X size={16} /></button>
+            </div>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-color)', fontSize: '12px', color: 'var(--text-secondary)', wordBreak: 'break-all' }}>
+              {browseCurrent}
+            </div>
+            <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+              {browseLoading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <div className="spin" style={{ width: '20px', height: '20px', border: '2px solid var(--border-color)', borderTopColor: 'var(--purple-500)', borderRadius: '50%', margin: '0 auto 8px' }} />
+                  Loading...
+                </div>
+              ) : (
+                <>
+                  {browseParent && (
+                    <div
+                      onClick={() => handleBrowseDir(browseParent)}
+                      style={{
+                        padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px',
+                        cursor: 'pointer', borderBottom: '1px solid var(--border-color)',
+                        color: 'var(--text-secondary)', fontSize: '13px',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-tertiary)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <Folder size={14} />
+                      ..
+                    </div>
+                  )}
+                  {browseDirs.map((dir: any) => (
+                    <div
+                      key={dir.path}
+                      onClick={() => handleBrowseDir(dir.path)}
+                      style={{
+                        padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px',
+                        cursor: 'pointer', borderBottom: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)', fontSize: '13px',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-tertiary)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />
+                      {dir.name}
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+            <div style={{ padding: '16px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button className="btn btn-secondary" onClick={() => setBrowseOpen(false)}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleSelectDir}>Select</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{
         display: 'flex', background: 'var(--bg-primary)',
         borderRadius: 'var(--radius-lg)', overflow: 'hidden',
         border: '1px solid var(--border-color)',
       }}>
 
-        {/* Left Nav */}
         <nav style={{
           width: '176px', flexShrink: 0,
           borderRight: '1px solid var(--border-color)',
@@ -158,10 +262,8 @@ export default function Settings() {
           ))}
         </nav>
 
-        {/* Right Content */}
         <form onSubmit={handleSubmit} style={{ flex: 1, padding: '20px 24px' }}>
 
-          {/* General */}
           {activeTab === 'general' && <>
             <div style={{ marginBottom: '16px' }}>
               <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 2px' }}>General</h2>
@@ -226,7 +328,6 @@ export default function Settings() {
             </div>
           </>}
 
-          {/* Retry */}
           {activeTab === 'retry' && <>
             <div style={{ marginBottom: '16px' }}>
               <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 2px' }}>Retry Settings</h2>
@@ -248,7 +349,20 @@ export default function Settings() {
             </div>
           </>}
 
-          {/* Webhook */}
+          {activeTab === 'registry' && <>
+            <div style={{ marginBottom: '16px' }}>
+              <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 2px' }}>Registry Credentials</h2>
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0 }}>Configure authentication for private or authenticated registries.</p>
+            </div>
+
+            <SettingRow label="GitHub Container Registry (ghcr.io)" hint="Personal access token with read:packages scope. Required even for public images on ghcr.io." noBorder>
+              <input type="password" className="form-control"
+                value={getValue('ghcr_token') || ''}
+                onChange={e => setFormData({ ...formData, ghcr_token: e.target.value })}
+                placeholder="ghp_xxxxxxxxxxxx" />
+            </SettingRow>
+          </>}
+
           {activeTab === 'webhook' && <>
             <div style={{ marginBottom: '16px' }}>
               <h2 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 2px' }}>Webhook Notifications</h2>
@@ -300,7 +414,6 @@ export default function Settings() {
             </SettingRow>
           </>}
 
-          {/* Actions */}
           <div style={{ display: 'flex', gap: '8px', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border-color)' }}>
             <button type="submit" className="btn btn-primary" disabled={saving}>
               <Save size={13} />

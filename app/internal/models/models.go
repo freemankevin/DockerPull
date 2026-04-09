@@ -61,6 +61,7 @@ type UpdateConfigRequest struct {
 	ConcurrentPulls  int    `json:"concurrent_pulls"`
 	DefaultPlatform  string `json:"default_platform"`
 	GzipCompression  int    `json:"gzip_compression"`
+	GhcrToken        string `json:"ghcr_token"`
 }
 
 type LoginRequest struct {

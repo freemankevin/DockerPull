@@ -149,6 +149,7 @@ server
 app/data/*.db
 app/exports/
 app/server.exe
+app/config/
 
 # Windows temp files
 nul
