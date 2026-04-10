@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  Plus, Trash2, Download, RefreshCw, Clock,
+  Trash2, Download, RefreshCw, Clock,
   AlertCircle, CheckCircle, Loader2, Package,
   Copy, Cpu,
 } from 'lucide-react'
@@ -350,8 +350,7 @@ export default function Images() {
         </div>
         <div className="page-header-actions">
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-            <Plus size={14} />
-            New
+            Add
           </button>
         </div>
       </div>
@@ -606,13 +605,10 @@ export default function Images() {
                   {isSubmitting ? (
                     <>
                       <Loader2 size={14} className="spin" />
-                      {batchMode ? 'Adding...' : 'Adding...'}
+                      Adding...
                     </>
                   ) : (
-                    <>
-                      <Plus size={14} />
-                      {batchMode ? 'Add Batch' : 'Add Image'}
-                    </>
+                    <>Add</>
                   )}
                 </button>
               </div>

@@ -83,7 +83,12 @@ export default function Stats() {
 
       {/* ── Success Rate Panel ── */}
       {stats.total > 0 && (
-        <div className="content-box" style={{ marginTop: 0 }}>
+        <div style={{
+          background: 'var(--bg-tertiary)',
+          borderRadius: 'var(--radius-card)',
+          padding: '18px 20px',
+          border: '1px solid var(--border-color)',
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <div style={{
               width: '32px',
