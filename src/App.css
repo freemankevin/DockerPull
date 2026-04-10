@@ -1861,8 +1861,7 @@ select.form-control {
 .settings-form-footer {
   display: flex;
   gap: 10px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border-color);
+  padding-top: 8px;
 }
 
 /* ═══════════════════════════════════════════════════════════
