@@ -6,7 +6,7 @@ export function useImages(
   onNotification?: (type: 'success' | 'error' | 'info' | 'warning', message: string) => void
 ) {
   const [images, setImages] = useState<Image[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const prevImagesRef = useRef<Image[]>([])
 

@@ -42,12 +42,12 @@ export default function Login() {
         <div className="login-overlay" />
         <div className="login-left-content">
           <div className="login-brand">
-            <div className="login-title">DockPull</div>
+            <div className="login-title">DockerPull</div>
             <p className="login-subtitle">
               A lightweight Docker image management system for pulling and organizing container images with ease
             </p>
           </div>
-          <div className="login-version">© 2026 DockPull — v2.4.1</div>
+          <div className="login-version">© 2026 DockerPull — v2.4.1</div>
         </div>
         <div className="login-dots">
           {Array.from({ length: 25 }).map((_, i) => <span key={i} />)}
@@ -140,7 +140,7 @@ export default function Login() {
           </button>
 
           <p className="login-form-footer">
-            New to DockPull? <a href="#">Request access</a>
+            New to DockerPull? <a href="#">Request access</a>
           </p>
         </div>
       </section>

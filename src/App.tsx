@@ -1,4 +1,4 @@
-import { Package, Settings, BarChart3, FileText } from 'lucide-react'
+import { Package, Settings, BarChart3, FileText, BookOpen, ExternalLink } from 'lucide-react'
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom'
 import Images from './pages/Images'
 import SettingsPage from './pages/Settings'
@@ -11,6 +11,20 @@ import { NotificationBell } from './context/NotificationBell'
 import { ToastProvider } from './context/ToastContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { UserMenu } from './context/UserMenu'
+import { DocLayout } from './docs'
+import {
+  Introduction,
+  QuickStart,
+  Installation,
+  ImageManagement,
+  MultiPlatform,
+  AutoExport,
+  Webhooks,
+  Settings as DocSettings,
+  Registries,
+  Tokens,
+  ApiReference
+} from './docs/pages'
 import './App.css'
 
 function MainApp() {
@@ -19,7 +33,7 @@ function MainApp() {
       {/* ── Sidebar ── */}
       <aside className="sidebar">
         <div className="logo">
-          <img src="/logo.png" alt="DockPull" className="logo-image" />
+          <img src="/logo.png" alt="DockerPull" className="logo-image" />
         </div>
 
         <ul className="nav-links">
@@ -46,6 +60,20 @@ function MainApp() {
               <Settings size={18} strokeWidth={1.75} />
               <span>Settings</span>
             </NavLink>
+          </li>
+          <li className="nav-divider">
+            <a
+              href="/docs/introduction"
+              className="docs-link"
+              onClick={(e) => {
+                e.preventDefault()
+                window.location.href = '/docs/introduction'
+              }}
+            >
+              <BookOpen size={18} strokeWidth={1.75} />
+              <span>Docs</span>
+              <ExternalLink size={12} className="docs-link-icon" />
+            </a>
           </li>
         </ul>
 
@@ -77,9 +105,24 @@ function MainApp() {
           <div className="card-body">
             <Routes>
               <Route path="/"         element={<Images />} />
-              <Route path="/logs"    element={<Logs />} />
+              <Route path="/logs"     element={<Logs />} />
               <Route path="/stats"    element={<Stats />} />
               <Route path="/settings" element={<SettingsPage />} />
+              {/* Docs routes - independent layout */}
+              <Route path="/docs" element={<DocLayout />}>
+                <Route index element={<Introduction />} />
+                <Route path="introduction"    element={<Introduction />} />
+                <Route path="quick-start"     element={<QuickStart />} />
+                <Route path="installation"    element={<Installation />} />
+                <Route path="image-management" element={<ImageManagement />} />
+                <Route path="multi-platform"  element={<MultiPlatform />} />
+                <Route path="auto-export"     element={<AutoExport />} />
+                <Route path="webhooks"        element={<Webhooks />} />
+                <Route path="settings"        element={<DocSettings />} />
+                <Route path="registries"      element={<Registries />} />
+                <Route path="tokens"          element={<Tokens />} />
+                <Route path="api-reference"   element={<ApiReference />} />
+              </Route>
             </Routes>
           </div>
         </div>

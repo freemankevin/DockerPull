@@ -12,7 +12,7 @@ import ImageModal from '../components/ImageModal'
 export default function Images() {
   const { addNotification } = useNotification()
   const { showToast } = useToast()
-  const { images, createImage, deleteImage, pullImage, exportImage } = useImages(addNotification)
+  const { images, loading, createImage, deleteImage, pullImage, exportImage } = useImages(addNotification)
   const { config } = useConfig()
   const [showModal, setShowModal] = useState(false)
   const [batchMode, setBatchMode] = useState(false)
@@ -159,7 +159,7 @@ export default function Images() {
         </div>
       </div>
 
-      {images.length > 0 ? (
+      {loading ? null : images.length > 0 ? (
         <div className="table-container">
           <table className="table">
             <thead>
