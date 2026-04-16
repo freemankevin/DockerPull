@@ -9,7 +9,7 @@ export const searchData: SearchItem[] = [
   {
     title: 'Introduction',
     path: '/docs/introduction',
-    headings: ['Why DockerPull?', 'Architecture Overview', 'Next Steps'],
+    headings: ['Why DockerPull?', 'Architecture Overview'],
     content: `Welcome to DockerPull. A modern container image management platform for pulling, storing, and distributing Docker images across multiple platforms with ease.
 Why DockerPull? DockerPull simplifies the process of managing container images from multiple registries. Whether you are working with Docker Hub, GitHub Container Registry, Quay, or Google Container Registry, DockerPull provides a unified interface to handle all your image operations.
 Multi-Registry Support. Pull from Docker Hub, GHCR, Quay, GCR, and more with unified management.
@@ -22,7 +22,7 @@ Pro Tip. DockerPull uses a pull-based architecture, ensuring images are always v
   {
     title: 'Quick Start',
     path: '/docs/quick-start',
-    headings: ['Access the Dashboard', 'Add Your First Image', 'Monitor Progress', 'Export Images', 'Common Image Formats', 'Next Steps'],
+    headings: ['Access the Dashboard', 'Add Your First Image', 'Monitor Progress', 'Export Images', 'Common Image Formats'],
     content: `Quick Start. Get up and running with DockerPull in under 5 minutes. Follow these simple steps to start managing your container images.
 Step 1. Access the Dashboard. After logging in, you will see the Overview page displaying real-time statistics about your image operations.
 Step 2. Add Your First Image. Navigate to the Images page and click the Add button. Enter the full image name like nginx:latest. Select target platforms amd64, arm64, or both. Enable auto-export if needed. Click Add to start pulling.

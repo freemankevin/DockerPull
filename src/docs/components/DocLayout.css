@@ -16,8 +16,11 @@
   --purple-500: #8b5cf6;
   --purple-400: #7c3aed;
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Monaco, "Cascadia Code", monospace;
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans-zh: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-serif-zh: "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", serif;
+  --font-mono: "SF Mono", ui-monospace, "JetBrains Mono", "Cascadia Code", monospace;
 }
 
 /* Dark theme */
@@ -41,6 +44,10 @@
   font-family: var(--font-sans);
 }
 
+[data-lang="zh"] .doc-root {
+  font-family: var(--font-sans-zh);
+}
+
 /* Header */
 .doc-header {
   position: fixed;
@@ -61,6 +68,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 
 .doc-header-left {
@@ -72,9 +80,8 @@
 .doc-header-center {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   flex: 2;
-  padding-left: 24px;
 }
 
 .doc-header-right {
@@ -83,21 +90,23 @@
   justify-content: flex-end;
   gap: 4px;
   flex: 1;
+  min-height: 36px;
 }
 
 /* Search */
 .doc-search-container {
-  position: relative;
-  width: 100%;
-  max-width: 600px;
+  position: fixed;
+  top: 10px;
+  right: 240px;
+  width: 180px;
+  transition: all 0.25s ease;
+  z-index: 110;
 }
 
-.doc-header-center {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex: 2;
-  padding-left: 24px;
+.doc-search-container:focus-within {
+  left: 308px;
+  right: 240px;
+  width: auto;
 }
 
 .doc-search-form {
@@ -128,6 +137,11 @@
   border-radius: 8px;
   outline: none;
   transition: all 0.2s ease;
+  font-family: var(--font-sans);
+}
+
+[data-lang="zh"] .doc-search-input {
+  font-family: var(--font-sans-zh);
 }
 
 .doc-search-input:hover {
@@ -160,12 +174,11 @@
 .doc-search-results {
   position: absolute;
   top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 480px;
+  left: 0;
+  width: 100%;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 6px;
   box-shadow: var(--shadow);
   z-index: 100;
   max-height: 400px;
@@ -212,6 +225,11 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+[data-lang="zh"] .doc-search-result-title {
+  font-family: var(--font-sans-zh);
 }
 
 .doc-search-result-excerpt {
@@ -224,6 +242,11 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  font-family: var(--font-sans);
+}
+
+[data-lang="zh"] .doc-search-result-excerpt {
+  font-family: var(--font-sans-zh);
 }
 
 .doc-search-highlight {
@@ -239,6 +262,24 @@
   text-align: center;
   font-size: 14px;
   color: var(--text-tertiary);
+  font-family: var(--font-sans);
+}
+
+[data-lang="zh"] .doc-search-no-results {
+  font-family: var(--font-sans-zh);
+}
+
+.doc-search-hint {
+  padding: 16px 24px 16px 36px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-family: var(--font-sans);
+  opacity: 0.7;
+}
+
+[data-lang="zh"] .doc-search-hint {
+  font-family: var(--font-sans-zh);
 }
 
 /* Header Links */
@@ -260,6 +301,73 @@
 .doc-header-link:hover {
   background: var(--bg-tertiary);
   color: var(--text-primary);
+}
+
+.doc-lang-container {
+  position: relative;
+}
+
+.doc-lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.doc-lang-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0;
+  font-family: var(--font-sans);
+}
+
+[data-lang="zh"] .doc-lang-label {
+  font-family: var(--font-sans-zh);
+}
+
+.doc-lang-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 120px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  z-index: 100;
+  padding: 4px;
+  animation: fadeIn 0.15s ease;
+}
+
+.doc-lang-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  text-align: left;
+  letter-spacing: -0.01em;
+  font-family: var(--font-sans);
+}
+
+[data-lang="zh"] .doc-lang-item {
+  font-family: var(--font-sans-zh);
+}
+
+.doc-lang-item:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.doc-lang-item-active {
+  background: var(--accent-bg);
+  color: var(--purple-500);
 }
 
 .doc-mobile-menu-btn {
@@ -330,6 +438,16 @@
   letter-spacing: -0.01em;
 }
 
+[data-lang="zh"] .doc-logo-text {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .doc-logo-text {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
+}
+
 .doc-nav {
   flex: 1;
   padding: 16px 12px;
@@ -352,6 +470,11 @@
   letter-spacing: 0.06em;
   padding: 0 12px;
   margin-bottom: 8px;
+  font-family: var(--font-sans);
+}
+
+[data-lang="zh"] .doc-nav-section-title {
+  font-family: var(--font-sans-zh);
 }
 
 .doc-nav-list {
@@ -375,6 +498,15 @@
   font-weight: 400;
   transition: all 0.15s ease;
   position: relative;
+  font-family: var(--font-sans);
+}
+
+[data-lang="zh"] .doc-nav-link {
+  font-family: var(--font-sans-zh);
+}
+
+[data-lang="zh"] .doc-nav-link-active .doc-nav-link-text {
+  font-weight: 500;
 }
 
 .doc-nav-link:hover {
@@ -471,7 +603,14 @@
   }
 
   .doc-search-container {
-    max-width: 300px;
+    right: 176px;
+    width: 140px;
+  }
+
+  .doc-search-container:focus-within {
+    left: 24px;
+    right: 176px;
+    width: auto;
   }
 }
 
@@ -482,7 +621,14 @@
   }
 
   .doc-search-container {
-    max-width: 200px;
+    right: 176px;
+    width: 100px;
+  }
+
+  .doc-search-container:focus-within {
+    left: 24px;
+    right: 176px;
+    width: auto;
   }
 
   .doc-search-kbd {
@@ -496,7 +642,14 @@
   }
 
   .doc-search-container {
-    max-width: 160px;
+    right: 176px;
+    width: 80px;
+  }
+
+  .doc-search-container:focus-within {
+    left: 16px;
+    right: 176px;
+    width: auto;
   }
 
   .doc-search-results {

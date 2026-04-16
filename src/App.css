@@ -44,10 +44,20 @@ body, * {
 }
 
 .logo span {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--letter-spacing-title);
+}
+
+[data-lang="zh"] .logo span {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .logo span {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 /* Nav Links */
@@ -71,8 +81,17 @@ body, * {
   font-weight: 400;
   font-size: 14px;
   line-height: 1.4;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--letter-spacing-normal);
   cursor: pointer;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .nav-links li a {
+  font-family: var(--font-serif-zh);
+}
+
+[data-lang="zh"] .nav-links li a.active span {
+  font-weight: 500;
 }
 
 .nav-links li a:hover {
@@ -104,8 +123,13 @@ body, * {
   font-weight: 400;
   font-size: 14px;
   line-height: 1.4;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--letter-spacing-normal);
   cursor: pointer;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .docs-link {
+  font-family: var(--font-serif-zh);
 }
 
 .docs-link:hover {
@@ -199,12 +223,22 @@ body, * {
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: -0.01em;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .user-name {
+  font-family: var(--font-serif-zh);
 }
 
 .user-role {
   font-size: 11.5px;
   color: var(--text-tertiary);
   margin-top: 1px;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .user-role {
+  font-family: var(--font-serif-zh);
 }
 
 .logout-btn {
@@ -331,18 +365,33 @@ body, * {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .user-menu-name {
+  font-family: var(--font-serif-zh);
 }
 
 .user-menu-role {
   font-size: 12px;
   color: var(--text-tertiary);
   margin-top: 2px;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .user-menu-role {
+  font-family: var(--font-serif-zh);
 }
 
 .user-menu-hint {
   font-size: 11px;
   color: var(--text-muted);
   margin-top: 4px;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .user-menu-hint {
+  font-family: var(--font-serif-zh);
 }
 
 .user-menu-divider {
@@ -365,6 +414,11 @@ body, * {
   color: var(--text-secondary);
   transition: background 0.12s ease, color 0.12s ease;
   text-align: left;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .user-menu-item {
+  font-family: var(--font-serif-zh);
 }
 
 .user-menu-item:hover {
@@ -486,10 +540,20 @@ body, * {
 }
 
 .page-header h1 {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: -0.03em;
+  letter-spacing: var(--letter-spacing-title);
+}
+
+[data-lang="zh"] .page-header h1 {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .page-header h1 {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 .page-header-actions {
@@ -603,6 +667,11 @@ body, * {
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.01em;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .notif-panel-title {
+  font-family: var(--font-serif-zh);
 }
 
 .notif-zap-icon {
@@ -638,7 +707,6 @@ body, * {
   padding: 3px 7px;
   border-radius: var(--radius-sm);
   transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
-  font-family: var(--font-sans);
   letter-spacing: -0.01em;
 }
 
@@ -857,11 +925,10 @@ body, * {
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  font-family: var(--font-sans);
   transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, opacity 0.12s ease;
   line-height: 1.5;
   white-space: nowrap;
-  letter-spacing: -0.005em;
+  letter-spacing: var(--letter-spacing-normal);
 }
 
 .btn-sm {
@@ -989,9 +1056,14 @@ body, * {
 
 .card-title {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--letter-spacing-subtitle);
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .card-title {
+  font-family: var(--font-serif-zh);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1135,6 +1207,11 @@ body, * {
   color: var(--text-primary);
   margin-bottom: 5px;
   letter-spacing: -0.01em;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .empty-state-title {
+  font-family: var(--font-serif-zh);
 }
 
 .empty-state-description {
@@ -1158,7 +1235,6 @@ body, * {
   border: 0.5px solid var(--border-color);
   border-radius: var(--radius-card);
   padding: 2px 7px;
-  font-family: var(--font-mono);
 }
 
 .empty-state-action {
@@ -1231,6 +1307,11 @@ body, * {
   color: var(--text-secondary);
   font-size: 13px;
   letter-spacing: -0.005em;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .form-group label {
+  font-family: var(--font-serif-zh);
 }
 
 .form-control {
@@ -1239,12 +1320,11 @@ body, * {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-card);
   font-size: 14px;
-  font-family: var(--font-sans);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   background: var(--bg-tertiary);
   color: var(--text-primary);
   line-height: 1.5;
-  letter-spacing: -0.004em;
+  letter-spacing: var(--letter-spacing-normal);
 }
 
 .form-control:focus {
@@ -1412,8 +1492,9 @@ select.form-control {
 }
 
 .checkbox-label span {
-  line-height: 1;
+  line-height: 16px;
   display: inline-block;
+  vertical-align: middle;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1457,10 +1538,20 @@ select.form-control {
 }
 
 .modal-header h2 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--letter-spacing-title);
+}
+
+[data-lang="zh"] .modal-header h2 {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .modal-header h2 {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 .modal-body {
@@ -1502,13 +1593,18 @@ select.form-control {
    Settings Sections
 ═══════════════════════════════════════════════════════════ */
 .section-title {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--text-primary);
   margin: 0 0 20px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--letter-spacing-subtitle);
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .section-title {
+  font-family: var(--font-serif-zh);
 }
 
 .settings-section {
@@ -1598,11 +1694,21 @@ select.form-control {
 }
 
 .stat-value {
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--letter-spacing-title);
   line-height: 1;
+}
+
+[data-lang="zh"] .stat-value {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .stat-value {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 .stat-icon-wrapper {
@@ -1725,7 +1831,6 @@ select.form-control {
 
 .platform-option-label {
   white-space: nowrap;
-  font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1;
 }
@@ -1753,6 +1858,11 @@ select.form-control {
   color: var(--text-primary);
   letter-spacing: -0.01em;
   margin: 0 0 18px;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .content-box-title {
+  font-family: var(--font-serif-zh);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1761,9 +1871,8 @@ select.form-control {
 .settings-container {
   display: flex;
   justify-content: center;
-  height: 100%;
+  min-height: 100%;
   background: var(--bg-primary);
-  overflow: hidden;
 }
 
 .settings-loading {
@@ -1777,11 +1886,10 @@ select.form-control {
 
 /* Left Sidebar */
 .settings-sidebar {
-  width: 260px;
+  width: 220px;
   flex-shrink: 0;
   background: var(--bg-primary);
-  padding: 40px 40px 40px 0;
-  overflow-y: auto;
+  padding: 40px 24px 40px 0;
 }
 
 .settings-sidebar-header {
@@ -1789,11 +1897,21 @@ select.form-control {
 }
 
 .settings-sidebar-title {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--letter-spacing-display);
   margin: 0;
+}
+
+[data-lang="zh"] .settings-sidebar-title {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .settings-sidebar-title {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 .settings-nav {
@@ -1824,6 +1942,15 @@ select.form-control {
   text-align: left;
   width: 100%;
   letter-spacing: -0.005em;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .settings-nav-item {
+  font-family: var(--font-serif-zh);
+}
+
+[data-lang="zh"] .settings-nav-item.active {
+  font-weight: 500;
 }
 
 .settings-nav-item:hover {
@@ -1859,9 +1986,8 @@ select.form-control {
 
 /* Right Content */
 .settings-content {
-  width: 680px;
+  width: 880px;
   flex-shrink: 0;
-  overflow-y: auto;
   padding: 40px 0 48px;
   background: var(--bg-primary);
 }
@@ -1875,11 +2001,21 @@ select.form-control {
 }
 
 .settings-page-title {
-  font-size: 26px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 500;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--letter-spacing-display);
   margin: 0 0 8px;
+}
+
+[data-lang="zh"] .settings-page-title {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .settings-page-title {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 .settings-page-subtitle {
@@ -1907,7 +2043,7 @@ select.form-control {
 
 /* ═══════════════════════════════════════════════════════════
     Utility Classes
- ═══════════════════════════════════════════════════════════ */
+  ═══════════════════════════════════════════════════════════ */
 .text-sm    { font-size: 12.5px; }
 .text-xs    { font-size: 11.5px; }
 .text-mono  { font-family: var(--font-mono); }
@@ -1967,6 +2103,17 @@ select.form-control {
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.01em;
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .docs-sidebar-header {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .docs-sidebar-header {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 .docs-sidebar-header svg {
@@ -2055,29 +2202,59 @@ select.form-control {
 }
 
 .docs-content h1 {
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 500;
   color: var(--text-primary);
   margin: 0 0 16px;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
+  letter-spacing: var(--letter-spacing-display);
+  line-height: 1.15;
+}
+
+[data-lang="zh"] .docs-content h1 {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .docs-content h1 {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 .docs-content h2 {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 500;
   color: var(--text-primary);
   margin: 32px 0 16px;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
+  letter-spacing: var(--letter-spacing-title);
+  line-height: 1.25;
+}
+
+[data-lang="zh"] .docs-content h2 {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .docs-content h2 {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 .docs-content h3 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 500;
   color: var(--text-primary);
   margin: 24px 0 12px;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--letter-spacing-subtitle);
+}
+
+[data-lang="zh"] .docs-content h3 {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.05em;
+}
+
+[data-lang="en"] .docs-content h3 {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
 }
 
 .docs-lead {
@@ -2112,6 +2289,11 @@ select.form-control {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
+  font-family: var(--font-serif);
+}
+
+[data-lang="zh"] .docs-feature h3 {
+  font-family: var(--font-serif-zh);
 }
 
 .docs-feature p {

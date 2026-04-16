@@ -3,13 +3,15 @@ import { useSearchParams } from 'react-router-dom'
 import { Search, RefreshCw, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
 import { imagesApi } from '../api'
 import { useImages } from '../hooks/useImages'
+import { useLanguage } from '../context/LanguageContext'
 import type { Image, ImageLog } from '../types'
-import { PAGE_SIZE, ALL_ACTIONS, PLATFORM_OPTIONS } from '../constants/logs'
+import { PAGE_SIZE, ALL_ACTIONS_KEYS, PLATFORM_OPTIONS_KEYS } from '../constants/logs'
 import { ActionBadge, FilterChip, ExpandableText } from '../components/LogComponents'
 
 export default function Logs() {
   const [searchParams] = useSearchParams()
   const { images } = useImages()
+  const { t } = useLanguage()
 
   const [logs, setLogs] = useState<ImageLog[]>([])
   const [loading, setLoading] = useState(true)
@@ -55,9 +57,12 @@ export default function Logs() {
 
   const uniqueImageKeys = [...new Set(images.map(img => `${img.name}:${img.tag}`))]
   const imageOptions = [
-    { value: 'all', label: 'All Images' },
+    { value: 'all', label: t('logs.allImages') },
     ...uniqueImageKeys.map(key => ({ value: key, label: key }))
   ]
+
+  const allActions = ALL_ACTIONS_KEYS.map(item => ({ value: item.value, label: t(item.labelKey) }))
+  const platformOptions = PLATFORM_OPTIONS_KEYS.map(item => ({ value: item.value, label: t(item.labelKey) }))
 
   const filtered = logs.filter(log => {
     const q = searchQuery.toLowerCase()
@@ -81,7 +86,7 @@ export default function Logs() {
     <div className="content-center">
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <h1>Logs</h1>
+          <h1>{t('logs.title')}</h1>
           {!loading && filtered.length > 0 && (
             <span style={{
               background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
@@ -92,7 +97,7 @@ export default function Logs() {
         </div>
         <button className="btn btn-secondary" onClick={fetchLogs} disabled={loading} style={{ height: '32px', padding: '0 12px', fontSize: '13px' }}>
           <RefreshCw size={13} className={loading ? 'spin' : ''} />
-          Refresh
+          {t('logs.refresh')}
         </button>
       </div>
 
@@ -109,7 +114,7 @@ export default function Logs() {
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search logs..."
+            placeholder={t('logs.searchPlaceholder')}
             style={{
               width: '100%', height: '32px',
               padding: '0 10px 0 30px',
@@ -126,9 +131,9 @@ export default function Logs() {
         <div style={{ width: '1px', height: '20px', background: 'var(--border-color)', flexShrink: 0 }} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-          <FilterChip label="All Platforms" value={selectedPlatform} options={PLATFORM_OPTIONS} onChange={setSelectedPlatform} />
-          <FilterChip label="All Images" value={selectedImageKey} options={imageOptions} onChange={setSelectedImageKey} />
-          <FilterChip label="All Actions" value={selectedAction} options={ALL_ACTIONS} onChange={setSelectedAction} />
+          <FilterChip label={t('logs.allPlatforms')} value={selectedPlatform} options={platformOptions} onChange={setSelectedPlatform} />
+          <FilterChip label={t('logs.allImages')} value={selectedImageKey} options={imageOptions} onChange={setSelectedImageKey} />
+          <FilterChip label={t('logs.allActions')} value={selectedAction} options={allActions} onChange={setSelectedAction} />
 
           {(selectedImageKey !== 'all' || selectedAction !== 'all' || selectedPlatform !== 'all') && (
             <button
@@ -142,7 +147,7 @@ export default function Logs() {
               onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
             >
-              Clear filters
+              {t('logs.clearFilters')}
             </button>
           )}
         </div>
@@ -165,25 +170,25 @@ export default function Logs() {
           textTransform: 'uppercase',
           alignItems: 'center',
         }}>
-          <span style={{ textAlign: 'left' }}>Time</span>
-          <span style={{ textAlign: 'left' }}>Image</span>
-          <span style={{ textAlign: 'left' }}>Action</span>
-          <span style={{ textAlign: 'left' }}>Message</span>
+          <span style={{ textAlign: 'left' }}>{t('logs.table.time')}</span>
+          <span style={{ textAlign: 'left' }}>{t('logs.table.image')}</span>
+          <span style={{ textAlign: 'left' }}>{t('logs.table.action')}</span>
+          <span style={{ textAlign: 'left' }}>{t('logs.table.message')}</span>
         </div>
 
         {loading ? (
           <div style={{ padding: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: 'var(--text-muted)', fontSize: '13px' }}>
             <RefreshCw size={15} className="spin" />
-            Loading logs...
+            {t('logs.loading')}
           </div>
         ) : paginated.length === 0 ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>
             <FileText size={36} style={{ color: 'var(--text-muted)', margin: '0 auto 12px', display: 'block', strokeWidth: 1.25 }} />
-            <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '4px' }}>No logs found</div>
+            <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '4px' }}>{t('logs.empty.title')}</div>
             <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
               {searchQuery || selectedAction !== 'all' || selectedImageKey !== 'all' || selectedPlatform !== 'all'
-                ? 'Try adjusting your filters'
-                : 'Logs will appear here as images are processed'}
+                ? t('logs.empty.desc')
+                : t('logs.empty.noLogs')}
             </div>
           </div>
         ) : (
@@ -205,7 +210,7 @@ export default function Logs() {
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-tertiary)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                   {formatTime(log.created_at)}
                 </span>
 
@@ -216,7 +221,6 @@ export default function Logs() {
                     expandedLogs={expandedLogs}
                     setExpandedLogs={setExpandedLogs}
                     fontSize="12px"
-                    fontFamily="var(--font-mono)"
                     color="var(--text-tertiary)"
                     showCopy={false}
                   />

@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
 import { Code, Sparkles } from 'lucide-react'
+import { useLanguage } from '../../context/LanguageContext'
 import CodeBlock from '../components/CodeBlock'
 import '../components/DocPage.css'
 
 export default function ApiReference() {
+  const { t, language } = useLanguage()
+  
   useEffect(() => {
-    document.title = 'API Reference - DockerPull Documentation'
-  }, [])
+    document.title = language === 'zh' ? 'API 参考 - DockerPull 文档' : 'API Reference - DockerPull Documentation'
+  }, [language])
 
   return (
     <div className="doc-page">
@@ -14,78 +17,70 @@ export default function ApiReference() {
         <div className="doc-page-breadcrumb">
           <a href="/docs/introduction">Docs</a>
           <span className="doc-page-breadcrumb-separator">/</span>
-          <span>Reference</span>
+          <span>{t('docs.section.reference')}</span>
         </div>
-        <h1 className="doc-page-title">API Reference</h1>
-        <p className="doc-page-description">
-          Programmatic access via REST API. Integrate DockerPull into your automation workflows and CI/CD pipelines.
-        </p>
+        <h1 className="doc-page-title">{t('docs.apiRef.title')}</h1>
+        <p className="doc-page-description">{t('docs.apiRef.heroDesc')}</p>
       </div>
 
       <div className="doc-content">
-        <h2>Authentication</h2>
-        <p>
-          All API requests require authentication via session cookie. Log in through the web interface
-          to obtain a valid session, then use the same cookie for API requests.
-        </p>
+        <h2>{t('docs.apiRef.auth.title')}</h2>
+        <p>{t('docs.apiRef.auth.desc')}</p>
 
         <div className="doc-callout doc-callout-info">
-          <div className="doc-callout-icon">
-            <Code size={18} />
+          <div className="doc-callout-header">
+            <Code size={20} className="doc-callout-icon" />
+            <span className="doc-callout-title">{language === 'zh' ? 'API 基础 URL' : 'API Base URL'}</span>
           </div>
-          <div className="doc-callout-content">
-            <div className="doc-callout-title">API Base URL</div>
-            <p className="doc-callout-text">
-              All API endpoints are prefixed with <code className="doc-inline-code">/api</code>.
-              Example: <code className="doc-inline-code">GET /api/images</code>
-            </p>
+          <div className="doc-callout-body">
+            <p className="doc-callout-text">{t('docs.apiRef.baseUrl')}</p>
           </div>
         </div>
 
-        <h2>Images Endpoints</h2>
+        <h2>{t('docs.apiRef.images.title')}</h2>
 
         <div className="doc-table-wrapper">
           <table className="doc-table">
             <thead>
               <tr>
-                <th>Method</th>
-                <th>Endpoint</th>
-                <th>Description</th>
+                <th>{t('docs.apiRef.table.method')}</th>
+                <th>{t('docs.apiRef.table.endpoint')}</th>
+                <th>{t('docs.apiRef.table.description')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><span className="doc-method doc-method-get">GET</span></td>
                 <td><code className="doc-inline-code">/api/images</code></td>
-                <td>List all images</td>
+                <td>{t('docs.apiRef.images.list')}</td>
               </tr>
               <tr>
                 <td><span className="doc-method doc-method-post">POST</span></td>
                 <td><code className="doc-inline-code">/api/images</code></td>
-                <td>Create image task</td>
+                <td>{t('docs.apiRef.images.create')}</td>
               </tr>
               <tr>
                 <td><span className="doc-method doc-method-post">POST</span></td>
                 <td><code className="doc-inline-code">/api/images/:id/pull</code></td>
-                <td>Trigger pull</td>
+                <td>{t('docs.apiRef.images.pull')}</td>
               </tr>
               <tr>
                 <td><span className="doc-method doc-method-post">POST</span></td>
                 <td><code className="doc-inline-code">/api/images/:id/export</code></td>
-                <td>Export image</td>
+                <td>{t('docs.apiRef.images.export')}</td>
               </tr>
               <tr>
                 <td><span className="doc-method doc-method-delete">DELETE</span></td>
                 <td><code className="doc-inline-code">/api/images/:id</code></td>
-                <td>Delete image</td>
+                <td>{t('docs.apiRef.images.delete')}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h3>Create Image</h3>
+        <h3>{t('docs.apiRef.create.title')}</h3>
         <CodeBlock
-          title="Request"
+          title={language === 'zh' ? '请求' : 'Request'}
           language="HTTP"
           code={`POST /api/images
 Content-Type: application/json
@@ -99,7 +94,7 @@ Content-Type: application/json
         />
 
         <CodeBlock
-          title="Response"
+          title={language === 'zh' ? '响应' : 'Response'}
           language="JSON"
           code={`{
   "id": 123,
@@ -112,29 +107,29 @@ Content-Type: application/json
 }`}
         />
 
-        <h2>Stats Endpoints</h2>
+        <h2>{t('docs.apiRef.stats.title')}</h2>
 
         <div className="doc-table-wrapper">
           <table className="doc-table">
             <thead>
               <tr>
-                <th>Method</th>
-                <th>Endpoint</th>
-                <th>Description</th>
+                <th>{t('docs.apiRef.table.method')}</th>
+                <th>{t('docs.apiRef.table.endpoint')}</th>
+                <th>{t('docs.apiRef.table.description')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><span className="doc-method doc-method-get">GET</span></td>
                 <td><code className="doc-inline-code">/api/stats</code></td>
-                <td>Get statistics</td>
+                <td>{t('docs.apiRef.stats.get')}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <CodeBlock
-          title="Response"
+          title={language === 'zh' ? '响应' : 'Response'}
           language="JSON"
           code={`{
   "total_images": 42,
@@ -146,45 +141,43 @@ Content-Type: application/json
 }`}
         />
 
-        <h2>Settings Endpoints</h2>
+        <h2>{t('docs.apiRef.settings.title')}</h2>
 
         <div className="doc-table-wrapper">
           <table className="doc-table">
             <thead>
               <tr>
-                <th>Method</th>
-                <th>Endpoint</th>
-                <th>Description</th>
+                <th>{t('docs.apiRef.table.method')}</th>
+                <th>{t('docs.apiRef.table.endpoint')}</th>
+                <th>{t('docs.apiRef.table.description')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><span className="doc-method doc-method-get">GET</span></td>
                 <td><code className="doc-inline-code">/api/settings</code></td>
-                <td>Get settings</td>
+                <td>{t('docs.apiRef.settings.get')}</td>
               </tr>
               <tr>
                 <td><span className="doc-method doc-method-put">PUT</span></td>
                 <td><code className="doc-inline-code">/api/settings</code></td>
-                <td>Update settings</td>
+                <td>{t('docs.apiRef.settings.update')}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Platform Check</h2>
-        <p>
-          Check which platforms are available for an image before pulling:
-        </p>
+        <h2>{t('docs.apiRef.platform.title')}</h2>
+        <p>{t('docs.apiRef.platform.desc')}</p>
 
         <CodeBlock
-          title="Request"
+          title={language === 'zh' ? '请求' : 'Request'}
           language="HTTP"
           code={`GET /api/images/check-platforms?name=nginx&tag=latest`}
         />
 
         <CodeBlock
-          title="Response"
+          title={language === 'zh' ? '响应' : 'Response'}
           language="JSON"
           code={`{
   "platforms": ["linux/amd64", "linux/arm64"],
@@ -192,13 +185,11 @@ Content-Type: application/json
 }`}
         />
 
-        <h2>Error Responses</h2>
-        <p>
-          API errors follow a consistent format:
-        </p>
+        <h2>{t('docs.apiRef.errors.title')}</h2>
+        <p>{t('docs.apiRef.errors.desc')}</p>
 
         <CodeBlock
-          title="Error Response"
+          title={language === 'zh' ? '错误响应' : 'Error Response'}
           language="JSON"
           code={`{
   "error": "Invalid platform",
@@ -207,63 +198,59 @@ Content-Type: application/json
 }`}
         />
 
-        <h2>Status Codes</h2>
+        <h2>{t('docs.apiRef.codes.title')}</h2>
         <div className="doc-table-wrapper">
           <table className="doc-table">
             <thead>
               <tr>
-                <th>Code</th>
-                <th>Description</th>
+                <th>{t('docs.apiRef.codesTable.code')}</th>
+                <th>{t('docs.apiRef.codesTable.description')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><code className="doc-inline-code">200 OK</code></td>
-                <td>Request successful</td>
+                <td>{t('docs.apiRef.codes.200')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">201 Created</code></td>
-                <td>Resource created successfully</td>
+                <td>{t('docs.apiRef.codes.201')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">400 Bad Request</code></td>
-                <td>Invalid request parameters</td>
+                <td>{t('docs.apiRef.codes.400')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">401 Unauthorized</code></td>
-                <td>Authentication required</td>
+                <td>{t('docs.apiRef.codes.401')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">404 Not Found</code></td>
-                <td>Resource not found</td>
+                <td>{t('docs.apiRef.codes.404')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">500 Internal Error</code></td>
-                <td>Server error</td>
+                <td>{t('docs.apiRef.codes.500')}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <div className="doc-callout doc-callout-tip">
-          <div className="doc-callout-icon">
-            <Sparkles size={18} />
+          <div className="doc-callout-header">
+            <Sparkles size={20} className="doc-callout-icon" />
+            <span className="doc-callout-title">{t('docs.proTip')}</span>
           </div>
-          <div className="doc-callout-content">
-            <div className="doc-callout-title">Pro Tip</div>
-            <p className="doc-callout-text">
-              Use the API to automate image management in your CI/CD pipeline.
-              Combine with webhooks for fully automated workflows.
-            </p>
+          <div className="doc-callout-body">
+            <p className="doc-callout-text">{t('docs.apiRef.tip')}</p>
           </div>
         </div>
       </div>
 
-      {/* Page Navigation */}
       <div className="doc-page-nav">
         <a href="/docs/tokens" className="doc-page-nav-prev">
-          <span className="doc-page-nav-label">Previous</span>
-          <span className="doc-page-nav-title">← Access Tokens</span>
+          <span className="doc-page-nav-label">{t('docs.prev')}</span>
+          <span className="doc-page-nav-title">← {language === 'zh' ? '访问令牌' : 'Access Tokens'}</span>
         </a>
         <div></div>
       </div>

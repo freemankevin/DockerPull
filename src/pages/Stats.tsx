@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { statsApi } from '../api'
 import { Package, CheckCircle, XCircle, Clock, TrendingUp } from 'lucide-react'
+import { useLanguage } from '../context/LanguageContext'
 
 export default function Stats() {
   const [stats, setStats] = useState({ total: 0, success: 0, failed: 0, pending: 0 })
+  const { t } = useLanguage()
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -25,32 +27,32 @@ export default function Stats() {
 
   const cards = [
     {
-      title: 'Total Images',
+      title: t('stats.total'),
       value: stats.total,
       icon: Package,
       color: 'purple',
-      description: 'All time image tasks',
+      description: t('stats.totalDesc'),
     },
     {
-      title: 'Successful',
+      title: t('stats.success'),
       value: stats.success,
       icon: CheckCircle,
       color: 'green',
-      description: 'Pulled successfully',
+      description: t('stats.successDesc'),
     },
     {
-      title: 'Failed',
+      title: t('stats.failed'),
       value: stats.failed,
       icon: XCircle,
       color: 'red',
-      description: 'Pull failed',
+      description: t('stats.failedDesc'),
     },
     {
-      title: 'Pending',
+      title: t('stats.pending'),
       value: stats.pending,
       icon: Clock,
       color: 'yellow',
-      description: 'Queued or in progress',
+      description: t('stats.pendingDesc'),
     },
   ]
 
@@ -58,7 +60,7 @@ export default function Stats() {
     <div className="content-center">
       {/* ── Page Header ── */}
       <div className="page-header">
-        <h1>Overview</h1>
+        <h1>{t('stats.title')}</h1>
       </div>
 
       {/* ── Stats Grid ── */}
@@ -103,10 +105,10 @@ export default function Stats() {
             </div>
             <div>
               <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
-                Success Rate
+                {t('stats.successRate')}
               </div>
               <div style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
-                Based on {stats.total} total task{stats.total !== 1 ? 's' : ''}
+                {t('stats.successRateDesc').replace('{count}', String(stats.total))}
               </div>
             </div>
             <div style={{ marginLeft: 'auto', fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
@@ -137,9 +139,9 @@ export default function Stats() {
           {/* Legend */}
           <div style={{ display: 'flex', gap: '20px', marginTop: '12px' }}>
             {[
-              { label: 'Success', value: stats.success, color: 'var(--green-500)' },
-              { label: 'Failed',  value: stats.failed,  color: 'var(--red-500)' },
-              { label: 'Pending', value: stats.pending, color: 'var(--yellow-500)' },
+              { label: t('stats.legend.success'), value: stats.success, color: 'var(--green-500)' },
+              { label: t('stats.legend.failed'),  value: stats.failed,  color: 'var(--red-500)' },
+              { label: t('stats.legend.pending'), value: stats.pending, color: 'var(--yellow-500)' },
             ].map(item => (
               <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div style={{

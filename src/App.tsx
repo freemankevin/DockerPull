@@ -10,6 +10,7 @@ import { NotificationProvider } from './context/NotificationContext'
 import { NotificationBell } from './context/NotificationBell'
 import { ToastProvider } from './context/ToastContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { LanguageProvider, useLanguage } from './context/LanguageContext'
 import { UserMenu } from './context/UserMenu'
 import { DocLayout } from './docs'
 import {
@@ -28,6 +29,8 @@ import {
 import './App.css'
 
 function MainApp() {
+  const { t, language } = useLanguage()
+  
   return (
     <div className="app-layout">
       {/* ── Sidebar ── */}
@@ -40,25 +43,25 @@ function MainApp() {
           <li className="nav-top-divider">
             <NavLink to="/stats">
               <BarChart3 size={18} strokeWidth={1.75} />
-              <span>Overview</span>
+              <span>{t('nav.overview')}</span>
             </NavLink>
           </li>
           <li>
             <NavLink to="/" end>
               <Package size={18} strokeWidth={1.75} />
-              <span>Images</span>
+              <span>{t('nav.images')}</span>
             </NavLink>
           </li>
           <li>
             <NavLink to="/logs">
               <FileText size={18} strokeWidth={1.75} />
-              <span>Logs</span>
+              <span>{t('nav.logs')}</span>
             </NavLink>
           </li>
           <li>
             <NavLink to="/settings">
               <Settings size={18} strokeWidth={1.75} />
-              <span>Settings</span>
+              <span>{t('nav.settings')}</span>
             </NavLink>
           </li>
           <li className="nav-divider">
@@ -71,7 +74,7 @@ function MainApp() {
               }}
             >
               <BookOpen size={18} strokeWidth={1.75} />
-              <span>Docs</span>
+              <span>{t('nav.docs')}</span>
               <ExternalLink size={12} className="docs-link-icon" />
             </a>
           </li>
@@ -89,9 +92,9 @@ function MainApp() {
           <NotificationBell />
           <div className="top-bar-divider"></div>
           <div className="top-bar-date">
-            {new Date().toLocaleString('en-US', {
+            {new Date().toLocaleString(language === 'zh' ? 'zh-CN' : 'en-US', {
               year: 'numeric',
-              month: 'short',
+              month: language === 'zh' ? 'long' : 'short',
               day: 'numeric',
               hour: '2-digit',
               minute: '2-digit'
@@ -136,7 +139,9 @@ function App() {
     <Router>
       <AuthProvider>
         <ThemeProvider>
-          <AppContent />
+          <LanguageProvider>
+            <AppContent />
+          </LanguageProvider>
         </ThemeProvider>
       </AuthProvider>
     </Router>
@@ -149,11 +154,13 @@ function AppContent() {
   if (!isAuthenticated) {
     return (
       <ThemeProvider>
-        <ToastProvider>
-          <NotificationProvider>
-            <Login />
-          </NotificationProvider>
-        </ToastProvider>
+        <LanguageProvider>
+          <ToastProvider>
+            <NotificationProvider>
+              <Login />
+            </NotificationProvider>
+          </ToastProvider>
+        </LanguageProvider>
       </ThemeProvider>
     )
   }

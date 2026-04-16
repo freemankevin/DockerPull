@@ -2,24 +2,19 @@ import { useState, useEffect } from 'react'
 import { User, ArrowRightFromLine, Key, Bell, Save, FlaskConical, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 import { useConfig } from '../hooks/useConfig'
 import { useToast } from '../context/ToastContext'
+import { useLanguage } from '../context/LanguageContext'
 import { webhookApi, authApi } from '../api'
 import DirectoryPicker from '../components/DirectoryPicker'
-import { TabId, TAB_TITLES, TOKEN_REGISTRY_CONFIG } from '../constants/settings'
+import { TabId, TAB_TITLE_KEYS, TOKEN_REGISTRY_CONFIG_KEYS } from '../constants/settings'
 import ExportSettings from './settings/ExportSettings'
 import AccountSettings from './settings/AccountSettings'
 import TokenSettings from './settings/TokenSettings'
 import WebhookSettings from './settings/WebhookSettings'
 
-const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
-  { id: 'account', label: 'Account',  icon: <User size={16} /> },
-  { id: 'export', label: 'Export',   icon: <ArrowRightFromLine size={16} /> },
-  { id: 'tokens',  label: 'Tokens',   icon: <Key size={16} /> },
-  { id: 'webhook', label: 'Webhook',  icon: <Bell size={16} /> },
-]
-
 export default function Settings() {
   const { config, loading, updateConfig } = useConfig()
   const { showToast } = useToast()
+  const { t } = useLanguage()
   const [saving, setSaving] = useState(false)
   const [formData, setFormData] = useState<any>({})
   const [activeTab, setActiveTab] = useState<TabId>('account')
@@ -31,12 +26,27 @@ export default function Settings() {
   const [visibleTokens, setVisibleTokens] = useState<string[]>([])
   const [showAddToken, setShowAddToken] = useState(false)
 
+  const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
+    { id: 'account', label: t('settings.tab.account'),  icon: <User size={16} /> },
+    { id: 'export', label: t('settings.tab.export'),   icon: <ArrowRightFromLine size={16} /> },
+    { id: 'tokens',  label: t('settings.tab.tokens'),   icon: <Key size={16} /> },
+    { id: 'webhook', label: t('settings.tab.webhook'),  icon: <Bell size={16} /> },
+  ]
+
   const getValue = (key: string) => formData[key] ?? config?.[key as keyof typeof config]
 
   const hasTokenConfig = (tokenId: string) => {
-    const registry = TOKEN_REGISTRY_CONFIG[tokenId as keyof typeof TOKEN_REGISTRY_CONFIG]
-    if (!registry) return false
-    return registry.checkKeys.some(key => {
+    const checkKeysMap: Record<string, string[]> = {
+      dockerhub: ['dockerhub_username', 'dockerhub_token'],
+      ghcr: ['ghcr_token'],
+      quay: ['quay_token'],
+      acr: ['acr_username', 'acr_password'],
+      ecr: ['ecr_access_key_id', 'ecr_secret_access_key'],
+      gar: ['gar_token'],
+    }
+    const checkKeys = checkKeysMap[tokenId]
+    if (!checkKeys) return false
+    return checkKeys.some(key => {
       const value = getValue(key)
       return value && value.trim() !== ''
     })
@@ -44,7 +54,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (config && visibleTokens.length === 0) {
-      const configuredTokens = Object.keys(TOKEN_REGISTRY_CONFIG).filter(id => hasTokenConfig(id))
+      const configuredTokens = Object.keys(TOKEN_REGISTRY_CONFIG_KEYS).filter(id => hasTokenConfig(id))
       setVisibleTokens(configuredTokens)
     }
   }, [config])
@@ -56,14 +66,14 @@ export default function Settings() {
     try {
       if (activeTab === 'account' && passwordData.oldPassword && passwordData.newPassword) {
         if (passwordData.newPassword.length < 6) {
-          showToast('error', 'New password must be at least 6 characters')
+          showToast('error', t('settings.password.minLength'))
           setSaveStatus('error')
           setTimeout(() => setSaveStatus('idle'), 2000)
           setSaving(false)
           return
         }
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-          showToast('error', 'New passwords do not match')
+          showToast('error', t('settings.password.mismatch'))
           setSaveStatus('error')
           setTimeout(() => setSaveStatus('idle'), 2000)
           setSaving(false)
@@ -71,19 +81,19 @@ export default function Settings() {
         }
         await authApi.changePassword(passwordData.oldPassword, passwordData.newPassword)
         setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' })
-        showToast('success', 'Password changed successfully')
+        showToast('success', t('settings.password.success'))
       }
 
       await updateConfig({ ...config, ...formData })
       setFormData({})
       setSaveStatus('success')
       if (activeTab !== 'account') {
-        showToast('success', 'Settings saved successfully')
+        showToast('success', t('settings.saved'))
       }
       setTimeout(() => setSaveStatus('idle'), 2000)
     } catch (err: any) {
       setSaveStatus('error')
-      const errorMsg = err.response?.data?.error || 'Failed to save settings'
+      const errorMsg = err.response?.data?.error || t('settings.failed')
       showToast('error', errorMsg)
       setTimeout(() => setSaveStatus('idle'), 2000)
     } finally {
@@ -96,11 +106,11 @@ export default function Settings() {
     try {
       await webhookApi.test()
       setTestStatus('success')
-      showToast('success', 'Test webhook sent successfully')
+      showToast('success', t('settings.sent'))
       setTimeout(() => setTestStatus('idle'), 2000)
     } catch (err: any) {
       setTestStatus('error')
-      showToast('error', 'Failed to send webhook: ' + err.message)
+      showToast('error', t('settings.failed') + ': ' + err.message)
       setTimeout(() => setTestStatus('idle'), 2000)
     }
   }
@@ -115,7 +125,7 @@ export default function Settings() {
         <div className="settings-loading">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-muted)' }}>
             <div className="spin" style={{ width: '18px', height: '18px', border: '2px solid var(--border-color)', borderTopColor: 'var(--purple-500)', borderRadius: '50%' }} />
-            Loading configuration...
+            {t('settings.loading')}
           </div>
         </div>
       </div>
@@ -133,7 +143,7 @@ export default function Settings() {
 
       <aside className="settings-sidebar">
         <div className="settings-sidebar-header">
-          <h2 className="settings-sidebar-title">Settings</h2>
+          <h2 className="settings-sidebar-title">{t('settings.title')}</h2>
         </div>
         <nav className="settings-nav">
           <div className="settings-nav-section">
@@ -154,8 +164,8 @@ export default function Settings() {
       <main className="settings-content">
         <form onSubmit={handleSubmit} className="settings-form">
           <div className="settings-page-header">
-            <h1 className="settings-page-title">{TAB_TITLES[activeTab].title}</h1>
-            <p className="settings-page-subtitle">{TAB_TITLES[activeTab].subtitle}</p>
+            <h1 className="settings-page-title">{t(TAB_TITLE_KEYS[activeTab].title)}</h1>
+            <p className="settings-page-subtitle">{t(TAB_TITLE_KEYS[activeTab].subtitle)}</p>
           </div>
 
           <div className="settings-divider" />
@@ -198,13 +208,13 @@ export default function Settings() {
               style={{ minWidth: '100px' }}
             >
               {saveStatus === 'saving' ? (
-                <><Loader2 size={14} className="spin" /> Saving...</>
+                <><Loader2 size={14} className="spin" /> {t('settings.saving')}</>
               ) : saveStatus === 'success' ? (
-                <><CheckCircle size={14} /> Saved</>
+                <><CheckCircle size={14} /> {t('settings.saved')}</>
               ) : saveStatus === 'error' ? (
-                <><AlertCircle size={14} /> Failed</>
+                <><AlertCircle size={14} /> {t('settings.failed')}</>
               ) : (
-                <><Save size={14} /> Save</>
+                <><Save size={14} /> {t('settings.save')}</>
               )}
             </button>
             {activeTab === 'webhook' && (
@@ -216,13 +226,13 @@ export default function Settings() {
                 style={{ minWidth: '100px' }}
               >
                 {testStatus === 'testing' ? (
-                  <><Loader2 size={14} className="spin" /> Testing...</>
+                  <><Loader2 size={14} className="spin" /> {t('settings.testing')}</>
                 ) : testStatus === 'success' ? (
-                  <><CheckCircle size={14} /> Sent</>
+                  <><CheckCircle size={14} /> {t('settings.sent')}</>
                 ) : testStatus === 'error' ? (
-                  <><AlertCircle size={14} /> Failed</>
+                  <><AlertCircle size={14} /> {t('settings.failed')}</>
                 ) : (
-                  <><FlaskConical size={14} /> Test</>
+                  <><FlaskConical size={14} /> {t('settings.test')}</>
                 )}
               </button>
             )}

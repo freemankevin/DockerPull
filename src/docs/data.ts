@@ -13,113 +13,113 @@ import {
 } from 'lucide-react'
 
 export interface DocSection {
-  title: string
+  titleKey: string
   items: DocItem[]
 }
 
 export interface DocItem {
   id: string
-  title: string
+  titleKey: string
   path: string
   icon: LucideIcon
-  description?: string
+  descriptionKey?: string
 }
 
 export const docSections: DocSection[] = [
   {
-    title: 'Getting Started',
+    titleKey: 'docs.section.gettingStarted',
     items: [
       {
         id: 'introduction',
-        title: 'Introduction',
+        titleKey: 'docs.intro.title',
         path: '/docs/introduction',
         icon: Sparkles,
-        description: 'Learn what DockerPull is and how it can help you manage container images.'
+        descriptionKey: 'docs.intro.heroDesc'
       },
       {
         id: 'quick-start',
-        title: 'Quick Start',
+        titleKey: 'docs.quickStart.title',
         path: '/docs/quick-start',
         icon: ArrowRight,
-        description: 'Get up and running with DockerPull in under 5 minutes.'
+        descriptionKey: 'docs.quickStart.desc'
       },
       {
         id: 'installation',
-        title: 'Installation',
+        titleKey: 'docs.installation.title',
         path: '/docs/installation',
         icon: Container,
-        description: 'Deploy DockerPull using Docker for easy setup and management.'
+        descriptionKey: 'docs.installation.desc'
       }
     ]
   },
   {
-    title: 'Core Features',
+    titleKey: 'docs.section.coreFeatures',
     items: [
       {
         id: 'image-management',
-        title: 'Image Management',
+        titleKey: 'docs.imageManagement.title',
         path: '/docs/image-management',
         icon: Layers,
-        description: 'Learn how to add, monitor, and manage container images.'
+        descriptionKey: 'docs.imageManagement.desc'
       },
       {
         id: 'multi-platform',
-        title: 'Multi-Platform',
+        titleKey: 'docs.multiPlatform.title',
         path: '/docs/multi-platform',
         icon: Globe,
-        description: 'Handle multi-architecture container images automatically.'
+        descriptionKey: 'docs.multiPlatform.desc'
       },
       {
         id: 'auto-export',
-        title: 'Auto Export',
+        titleKey: 'docs.autoExport.title',
         path: '/docs/auto-export',
         icon: Download,
-        description: 'Automatically export pulled images to a specified directory.'
+        descriptionKey: 'docs.autoExport.desc'
       },
       {
         id: 'webhooks',
-        title: 'Webhooks',
+        titleKey: 'docs.webhooks.title',
         path: '/docs/webhooks',
         icon: Bell,
-        description: 'Receive real-time notifications for image events.'
+        descriptionKey: 'docs.webhooks.desc'
       }
     ]
   },
   {
-    title: 'Configuration',
+    titleKey: 'docs.section.configuration',
     items: [
       {
         id: 'settings',
-        title: 'Settings',
+        titleKey: 'docs.settings.title',
         path: '/docs/settings',
         icon: Settings,
-        description: 'Configure DockerPull to match your workflow.'
+        descriptionKey: 'docs.settings.desc'
       },
       {
         id: 'registries',
-        title: 'Registries',
+        titleKey: 'docs.registries.title',
         path: '/docs/registries',
         icon: Globe,
-        description: 'Pull from multiple container registries with unified management.'
+        descriptionKey: 'docs.registries.desc'
       },
       {
         id: 'tokens',
-        title: 'Access Tokens',
+        titleKey: 'docs.tokens.title',
         path: '/docs/tokens',
         icon: Key,
-        description: 'Configure registry credentials for private image pulls.'
+        descriptionKey: 'docs.tokens.desc'
       }
     ]
   },
   {
-    title: 'Reference',
+    titleKey: 'docs.section.reference',
     items: [
       {
         id: 'api-reference',
-        title: 'API Reference',
+        titleKey: 'docs.apiRef.title',
         path: '/docs/api-reference',
         icon: Code,
-        description: 'Programmatic access via REST API.'
+        descriptionKey: 'docs.apiRef.desc'
       }
     ]
   }

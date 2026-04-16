@@ -1,4 +1,5 @@
 import { Loader2 } from 'lucide-react'
+import { useLanguage } from '../context/LanguageContext'
 import { PlatformOption, platformOptions } from './ImageComponents'
 
 interface ImageModalProps {
@@ -28,13 +29,14 @@ export default function ImageModal({
   isSubmitting,
   handlePlatformToggle,
 }: ImageModalProps) {
+  const { t } = useLanguage()
   if (!showModal) return null
 
   return (
     <div className="modal-overlay" onClick={handleCloseModal}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Add Image</h2>
+          <h2>{t('modal.addImage')}</h2>
           <button className="btn-close" onClick={handleCloseModal}>×</button>
         </div>
 
@@ -47,13 +49,13 @@ export default function ImageModal({
                   checked={batchMode}
                   onChange={(e) => setBatchMode(e.target.checked)}
                 />
-                <span>Batch mode — one image per line</span>
+                <span>{t('modal.batchMode')}</span>
               </label>
             </div>
 
             {batchMode ? (
               <div className="form-group">
-                <label>Images</label>
+                <label>{t('modal.images')}</label>
                 <textarea
                   className="form-control"
                   rows={6}
@@ -65,7 +67,7 @@ export default function ImageModal({
               </div>
             ) : (
               <div className="form-group">
-                <label>Image</label>
+                <label>{t('modal.image')}</label>
                 <input
                   type="text"
                   className="form-control"
@@ -79,7 +81,7 @@ export default function ImageModal({
             )}
 
             <div className="form-group">
-              <label>Platforms</label>
+              <label>{t('modal.platforms')}</label>
               <div style={{ display: 'flex', gap: '6px' }}>
                 {platformOptions.map(opt => (
                   <PlatformOption
@@ -99,7 +101,7 @@ export default function ImageModal({
                   checked={formData.is_auto_export}
                   onChange={(e) => setFormData({ ...formData, is_auto_export: e.target.checked })}
                 />
-                <span>Auto-export after pull completes</span>
+                <span>{t('modal.autoExport')}</span>
               </label>
             </div>
           </div>
@@ -111,7 +113,7 @@ export default function ImageModal({
               onClick={handleCloseModal}
               disabled={isSubmitting}
             >
-              Cancel
+              {t('modal.cancel')}
             </button>
             <button
               type="submit"
@@ -121,10 +123,10 @@ export default function ImageModal({
               {isSubmitting ? (
                 <>
                   <Loader2 size={14} className="spin" />
-                  Adding...
+                  {t('modal.saving')}
                 </>
               ) : (
-                <>Add</>
+                <>Save</>
               )}
             </button>
           </div>

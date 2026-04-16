@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Package, Copy, CheckCircle, Cpu, Clock, AlertCircle, Loader2 } from 'lucide-react'
+import { useLanguage } from '../context/LanguageContext'
 import type { Image } from '../types'
 
 export function RegistryIcon({ registry }: { registry: string }) {
@@ -35,6 +36,7 @@ export function RegistryIcon({ registry }: { registry: string }) {
 
 export function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
+  const { t } = useLanguage()
 
   const handleCopy = async () => {
     try {
@@ -57,7 +59,7 @@ export function CopyButton({ text }: { text: string }) {
     <button
       onClick={handleCopy}
       className="copy-btn"
-      title={copied ? 'Copied!' : 'Copy image name'}
+      title={copied ? t('copy.copied') : t('copy.copyName')}
       style={{
         padding: '4px',
         border: 'none',
@@ -80,7 +82,7 @@ export function CopyButton({ text }: { text: string }) {
 export function PlatformBadge({ platform }: { platform: string }) {
   const isAMD64 = platform.includes('amd64')
   const isARM64 = platform.includes('arm64')
-  
+
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: '5px',
@@ -123,33 +125,34 @@ export function PlatformOption({
 }
 
 export function StatusBadge({ status }: { status: Image['status'] }) {
+  const { t } = useLanguage()
   switch (status) {
     case 'pending':
       return (
         <span className="badge badge-pending">
           <Clock size={11} />
-          Pending
+          {t('status.pending')}
         </span>
       )
     case 'pulling':
       return (
         <span className="badge badge-pulling">
           <Loader2 size={11} className="spin" />
-          Pulling
+          {t('status.pulling')}
         </span>
       )
     case 'success':
       return (
         <span className="badge badge-success">
           <CheckCircle size={11} />
-          Success
+          {t('status.success')}
         </span>
       )
     case 'failed':
       return (
         <span className="badge badge-failed">
           <AlertCircle size={11} />
-          Failed
+          {t('status.failed')}
         </span>
       )
     default:

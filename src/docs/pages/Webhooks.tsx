@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
 import { Sparkles } from 'lucide-react'
+import { useLanguage } from '../../context/LanguageContext'
 import CodeBlock from '../components/CodeBlock'
 import '../components/DocPage.css'
 
 export default function Webhooks() {
+  const { t, language } = useLanguage()
+  
   useEffect(() => {
-    document.title = 'Webhooks - DockerPull Documentation'
-  }, [])
+    document.title = language === 'zh' ? 'Webhooks - DockerPull 文档' : 'Webhooks - DockerPull Documentation'
+  }, [language])
 
   return (
     <div className="doc-page">
@@ -14,69 +17,40 @@ export default function Webhooks() {
         <div className="doc-page-breadcrumb">
           <a href="/docs/introduction">Docs</a>
           <span className="doc-page-breadcrumb-separator">/</span>
-          <span>Core Features</span>
+          <span>{t('docs.section.coreFeatures')}</span>
         </div>
-        <h1 className="doc-page-title">Webhook Notifications</h1>
-        <p className="doc-page-description">
-          Receive real-time notifications for image events. Integrate DockerPull with your CI/CD pipeline or notification systems.
-        </p>
+        <h1 className="doc-page-title">{t('docs.webhooks.title')}</h1>
+        <p className="doc-page-description">{t('docs.webhooks.heroDesc')}</p>
       </div>
 
       <div className="doc-content">
-        <h2>Configuration</h2>
-        <p>
-          Set up webhooks to receive HTTP POST requests when specific events occur.
-        </p>
+        <h2>{t('docs.webhooks.config.title')}</h2>
+        <p>{t('docs.webhooks.config.desc')}</p>
 
-        <div className="doc-step-list">
-          <div className="doc-step">
-            <div className="doc-step-number">1</div>
-            <div className="doc-step-content">
-              <h3 className="doc-step-title">Navigate to Settings</h3>
-              <p className="doc-step-description">
-                Go to Settings → Webhook in the application sidebar.
-              </p>
-            </div>
-          </div>
+        <ol className="doc-ordered-steps">
+          <li>
+            <h3>{t('docs.webhooks.step1')}</h3>
+            <p>{t('docs.webhooks.step1Desc')}</p>
+          </li>
+          <li>
+            <h3>{t('docs.webhooks.step2')}</h3>
+            <p>{t('docs.webhooks.step2Desc')}</p>
+          </li>
+          <li>
+            <h3>{t('docs.webhooks.step3')}</h3>
+            <p>{t('docs.webhooks.step3Desc')}</p>
+          </li>
+          <li>
+            <h3>{t('docs.webhooks.step4')}</h3>
+            <p>{t('docs.webhooks.step4Desc')}</p>
+          </li>
+        </ol>
 
-          <div className="doc-step">
-            <div className="doc-step-number">2</div>
-            <div className="doc-step-content">
-              <h3 className="doc-step-title">Enter Webhook URL</h3>
-              <p className="doc-step-description">
-                Provide the HTTPS endpoint where you want to receive notifications.
-              </p>
-            </div>
-          </div>
-
-          <div className="doc-step">
-            <div className="doc-step-number">3</div>
-            <div className="doc-step-content">
-              <h3 className="doc-step-title">Test Connection</h3>
-              <p className="doc-step-description">
-                Click Test to verify connectivity. A test event will be sent to your endpoint.
-              </p>
-            </div>
-          </div>
-
-          <div className="doc-step">
-            <div className="doc-step-number">4</div>
-            <div className="doc-step-content">
-              <h3 className="doc-step-title">Save Configuration</h3>
-              <p className="doc-step-description">
-                Save to activate webhook notifications for all future events.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <h2>Payload Format</h2>
-        <p>
-          All webhook events follow a consistent JSON structure:
-        </p>
+        <h2>{t('docs.webhooks.payload.title')}</h2>
+        <p>{t('docs.webhooks.payload.desc')}</p>
 
         <CodeBlock
-          title="Webhook Payload"
+          title={language === 'zh' ? 'Webhook 数据' : 'Webhook Payload'}
           language="JSON"
           code={`{
   "event": "image.pulled",
@@ -94,52 +68,48 @@ export default function Webhooks() {
 }`}
         />
 
-        <h2>Event Types</h2>
-        <p>
-          DockerPull sends notifications for the following events:
-        </p>
+        <h2>{t('docs.webhooks.events.title')}</h2>
+        <p>{t('docs.webhooks.events.desc')}</p>
 
         <div className="doc-table-wrapper">
           <table className="doc-table">
             <thead>
               <tr>
-                <th>Event</th>
-                <th>Description</th>
-                <th>When Triggered</th>
+                <th>{t('docs.webhooks.eventsTable.event')}</th>
+                <th>{t('docs.webhooks.eventsTable.description')}</th>
+                <th>{t('docs.webhooks.eventsTable.when')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><code className="doc-inline-code">image.pulled</code></td>
-                <td>Successfully pulled image</td>
-                <td>After pull completes successfully</td>
+                <td>{t('docs.webhooks.events.pulled')}</td>
+                <td>{t('docs.webhooks.events.pulledWhen')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">image.failed</code></td>
-                <td>Pull attempt failed</td>
-                <td>When pull fails after all retries</td>
+                <td>{t('docs.webhooks.events.failed')}</td>
+                <td>{t('docs.webhooks.events.failedWhen')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">image.exported</code></td>
-                <td>Image exported to file</td>
-                <td>After auto-export completes</td>
+                <td>{t('docs.webhooks.events.exported')}</td>
+                <td>{t('docs.webhooks.events.exportedWhen')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">image.retry</code></td>
-                <td>Retry initiated</td>
-                <td>When user clicks retry button</td>
+                <td>{t('docs.webhooks.events.retry')}</td>
+                <td>{t('docs.webhooks.events.retryWhen')}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Example: Slack Integration</h2>
-        <p>
-          Integrate with Slack for team notifications:
-        </p>
+        <h2>{t('docs.webhooks.slack.title')}</h2>
+        <p>{t('docs.webhooks.slack.desc')}</p>
 
         <CodeBlock
-          title="Slack Webhook Handler"
+          title={language === 'zh' ? 'Slack Webhook 处理' : 'Slack Webhook Handler'}
           language="Node.js"
           code={`app.post('/webhook/dockpull', (req, res) => {
   const { event, data } = req.body;
@@ -161,36 +131,32 @@ export default function Webhooks() {
         />
 
         <div className="doc-callout doc-callout-tip">
-          <div className="doc-callout-icon">
-            <Sparkles size={18} />
+          <div className="doc-callout-header">
+            <Sparkles size={20} className="doc-callout-icon" />
+            <span className="doc-callout-title">{t('docs.proTip')}</span>
           </div>
-          <div className="doc-callout-content">
-            <div className="doc-callout-title">Pro Tip</div>
-            <p className="doc-callout-text">
-              Integrate with Slack, Discord, PagerDuty, or your CI/CD system for automated workflows.
-              Webhooks enable DockerPull to become a seamless part of your DevOps pipeline.
-            </p>
+          <div className="doc-callout-body">
+            <p className="doc-callout-text">{t('docs.webhooks.tip')}</p>
           </div>
         </div>
 
-        <h2>Security Considerations</h2>
+        <h2>{t('docs.webhooks.security.title')}</h2>
         <ul>
-          <li>Use HTTPS endpoints only</li>
-          <li>Validate the payload in your webhook handler</li>
-          <li>Implement retry logic for failed webhook deliveries</li>
-          <li>Consider using webhook signatures if available</li>
+          <li>{t('docs.webhooks.security.item1')}</li>
+          <li>{t('docs.webhooks.security.item2')}</li>
+          <li>{t('docs.webhooks.security.item3')}</li>
+          <li>{t('docs.webhooks.security.item4')}</li>
         </ul>
       </div>
 
-      {/* Page Navigation */}
       <div className="doc-page-nav">
         <a href="/docs/auto-export" className="doc-page-nav-prev">
-          <span className="doc-page-nav-label">Previous</span>
-          <span className="doc-page-nav-title">← Auto Export</span>
+          <span className="doc-page-nav-label">{t('docs.prev')}</span>
+          <span className="doc-page-nav-title">← {t('docs.autoExport.title')}</span>
         </a>
         <a href="/docs/settings" className="doc-page-nav-next">
-          <span className="doc-page-nav-label">Next</span>
-          <span className="doc-page-nav-title">Settings →</span>
+          <span className="doc-page-nav-label">{t('docs.next')}</span>
+          <span className="doc-page-nav-title">{t('docs.settings.title')} →</span>
         </a>
       </div>
     </div>

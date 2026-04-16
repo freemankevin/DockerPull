@@ -1,4 +1,5 @@
 import { Eye, EyeOff } from 'lucide-react'
+import { useLanguage } from '../../context/LanguageContext'
 import SettingRow from '../../components/SettingRow'
 
 interface AccountSettingsProps {
@@ -9,16 +10,18 @@ interface AccountSettingsProps {
 }
 
 export default function AccountSettings({ passwordData, setPasswordData, showPasswords, setShowPasswords }: AccountSettingsProps) {
+  const { t } = useLanguage()
+
   return (
     <>
-      <SettingRow label="Old Password" hint="Enter your current password.">
+      <SettingRow label={t('settings.password.old')} hint={t('settings.password.oldHint')}>
         <div className="password-input-wrapper">
           <input
             type={showPasswords.old ? 'text' : 'password'}
             className="form-control"
             value={passwordData.oldPassword}
             onChange={e => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
-            placeholder="Enter old password" />
+            placeholder={t('settings.password.oldPlaceholder')} />
           <button
             type="button"
             className="password-toggle-btn"
@@ -31,14 +34,14 @@ export default function AccountSettings({ passwordData, setPasswordData, showPas
         </div>
       </SettingRow>
 
-      <SettingRow label="New Password" hint="New password must be at least 6 characters.">
+      <SettingRow label={t('settings.password.new')} hint={t('settings.password.newHint')}>
         <div className="password-input-wrapper">
           <input
             type={showPasswords.new ? 'text' : 'password'}
             className="form-control"
             value={passwordData.newPassword}
             onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-            placeholder="Enter new password" />
+            placeholder={t('settings.password.newPlaceholder')} />
           <button
             type="button"
             className="password-toggle-btn"
@@ -51,14 +54,14 @@ export default function AccountSettings({ passwordData, setPasswordData, showPas
         </div>
       </SettingRow>
 
-      <SettingRow label="Confirm New Password" hint="Re-enter your new password to confirm." noBorder>
+      <SettingRow label={t('settings.password.confirm')} hint={t('settings.password.confirmHint')} noBorder>
         <div className="password-input-wrapper">
           <input
             type={showPasswords.confirm ? 'text' : 'password'}
             className="form-control"
             value={passwordData.confirmPassword}
             onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-            placeholder="Confirm new password" />
+            placeholder={t('settings.password.confirmPlaceholder')} />
           <button
             type="button"
             className="password-toggle-btn"

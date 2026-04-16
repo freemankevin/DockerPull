@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { X, FolderOpen } from 'lucide-react'
 import { browseApi } from '../api'
+import { useLanguage } from '../context/LanguageContext'
 import type { Directory, SpecialDir, Breadcrumb, BrowseResponse } from '../types/directory'
 import { renderSpecialDirButton } from './DirectoryPickerSidebar'
 import { renderBreadcrumb, renderRefreshButton } from './DirectoryPickerBreadcrumb'
@@ -14,6 +15,7 @@ interface DirectoryPickerProps {
 }
 
 export default function DirectoryPicker({ isOpen, onClose, onSelect, initialPath }: DirectoryPickerProps) {
+  const { t } = useLanguage()
   const [currentPath, setCurrentPath] = useState(initialPath || '')
   const [directories, setDirectories] = useState<Directory[]>([])
   const [specialDirs, setSpecialDirs] = useState<SpecialDir[]>([])
@@ -32,11 +34,11 @@ export default function DirectoryPicker({ isOpen, onClose, onSelect, initialPath
       setSpecialDirs(data.specials || [])
       setBreadcrumbs(data.breadcrumbs || [])
     } catch (err: any) {
-      setError(err.message || 'Failed to load directory')
+      setError(err.message || t('dirPicker.loadFailed'))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     if (isOpen) {
@@ -119,12 +121,12 @@ export default function DirectoryPicker({ isOpen, onClose, onSelect, initialPath
                 fontSize: '15px',
                 fontWeight: 600,
                 color: 'var(--text-primary)',
-              }}>Select Directory</div>
+              }}>{t('dirPicker.title')}</div>
               <div style={{
                 fontSize: '12px',
                 color: 'var(--text-muted)',
                 marginTop: '1px',
-              }}>Choose where to save exported images</div>
+              }}>{t('dirPicker.subtitle')}</div>
             </div>
           </div>
           <button
@@ -169,7 +171,7 @@ export default function DirectoryPicker({ isOpen, onClose, onSelect, initialPath
               letterSpacing: '0.05em',
               padding: '8px 6px 6px',
             }}>
-              Quick Access
+              {t('dirPicker.quickAccess')}
             </div>
             {specialDirs.map((special) => renderSpecialDirButton(special, currentPath, loadDirectory))}
           </div>
@@ -205,9 +207,9 @@ export default function DirectoryPicker({ isOpen, onClose, onSelect, initialPath
                 color: 'var(--text-muted)',
                 userSelect: 'none',
               }}>
-                <div style={{ flex: 1 }}>Name</div>
-                <div style={{ width: '150px', textAlign: 'left', paddingRight: '12px' }}>Date modified</div>
-                <div style={{ width: '70px', textAlign: 'left' }}>Type</div>
+                <div style={{ flex: 1 }}>{t('dirPicker.name')}</div>
+                <div style={{ width: '150px', textAlign: 'left', paddingRight: '12px' }}>{t('dirPicker.dateModified')}</div>
+                <div style={{ width: '70px', textAlign: 'left' }}>{t('dirPicker.type')}</div>
               </div>
 
               <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -237,7 +239,7 @@ export default function DirectoryPicker({ isOpen, onClose, onSelect, initialPath
               height: 'auto',
             }}
           >
-            Cancel
+            {t('dirPicker.cancel')}
           </button>
           <button
             className="btn btn-primary"
@@ -253,7 +255,7 @@ export default function DirectoryPicker({ isOpen, onClose, onSelect, initialPath
               minWidth: '72px',
             }}
           >
-            Select
+            {t('dirPicker.select')}
           </button>
         </div>
       </div>

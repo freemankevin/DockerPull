@@ -1,17 +1,26 @@
 export type TabId = 'account' | 'export' | 'webhook' | 'tokens'
 
-export const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
-  { id: 'account', label: 'Account',  icon: null },
-  { id: 'export', label: 'Export',   icon: null },
-  { id: 'tokens',  label: 'Tokens',   icon: null },
-  { id: 'webhook', label: 'Webhook',  icon: null },
-]
+export const TAB_LABEL_KEYS: Record<TabId, string> = {
+  account: 'settings.tab.account',
+  export: 'settings.tab.export',
+  tokens: 'settings.tab.tokens',
+  webhook: 'settings.tab.webhook',
+}
 
-export const TAB_TITLES: Record<TabId, { title: string; subtitle: string }> = {
-  account: { title: 'Account Settings', subtitle: 'Manage your account credentials and password.' },
-  export: { title: 'Export Settings', subtitle: 'Configure export path, platform, and pull behavior.' },
-  tokens: { title: 'Access Tokens', subtitle: 'Configure authentication tokens for container registries.' },
-  webhook: { title: 'Webhook Notifications', subtitle: 'Configure notifications for pull completion and failures.' },
+export const TAB_TITLE_KEYS: Record<TabId, { title: string; subtitle: string }> = {
+  account: { title: 'settings.account.title', subtitle: 'settings.account.subtitle' },
+  export: { title: 'settings.export.title', subtitle: 'settings.export.subtitle' },
+  tokens: { title: 'settings.tokens.title', subtitle: 'settings.tokens.subtitle' },
+  webhook: { title: 'settings.webhook.title', subtitle: 'settings.webhook.subtitle' },
+}
+
+export const TOKEN_REGISTRY_CONFIG_KEYS = {
+  dockerhub: 'dockerhub',
+  ghcr: 'ghcr',
+  quay: 'quay',
+  acr: 'acr',
+  ecr: 'ecr',
+  gar: 'gar',
 }
 
 export const TOKEN_REGISTRY_CONFIG = {

@@ -1,152 +1,137 @@
 import { useEffect } from 'react'
-
-import { Sparkles, Globe, Layers, Download, Bell, ArrowRight } from 'lucide-react'
+import { Sparkles, Globe, Layers, Download, Bell, FolderOpen } from 'lucide-react'
+import { useLanguage } from '../../context/LanguageContext'
 import '../components/DocPage.css'
-import CodeBlock from '../components/CodeBlock'
 
 export default function Introduction() {
+  const { t, language } = useLanguage()
+  
   useEffect(() => {
-    document.title = 'Introduction - DockerPull Documentation'
-  }, [])
+    document.title = language === 'zh' ? '介绍 - DockerPull 文档' : 'Introduction - DockerPull Documentation'
+  }, [language])
 
   return (
     <div className="doc-page">
-      {/* Hero Section */}
       <div className="doc-hero">
-        <h1 className="doc-hero-title">Welcome to DockerPull</h1>
-        <p className="doc-hero-description">
-          A modern container image management platform for pulling, storing, and distributing
-          Docker images across multiple platforms with ease.
-        </p>
+        <h1 className="doc-hero-title">{t('docs.intro.heroTitle')}</h1>
+        <p className="doc-hero-description">{t('docs.intro.heroDesc')}</p>
       </div>
 
       <div className="doc-content">
-        <h2>Why DockerPull?</h2>
-        <p>
-          DockerPull simplifies the process of managing container images from multiple registries.
-          Whether you are working with Docker Hub, GitHub Container Registry, Quay, or Google
-          Container Registry, DockerPull provides a unified interface to handle all your image
-          operations.
-        </p>
+        <h2>{t('docs.intro.whyTitle')}</h2>
+        <p>{t('docs.intro.whyDesc')}</p>
 
-        {/* Feature Grid */}
         <div className="doc-feature-grid">
           <div className="doc-feature-card">
             <div className="doc-feature-icon">
               <Globe size={22} />
             </div>
-            <h3 className="doc-feature-title">Multi-Registry Support</h3>
-            <p className="doc-feature-description">
-              Pull from Docker Hub, GHCR, Quay, GCR, and more with unified management.
-            </p>
+            <h3 className="doc-feature-title">{t('docs.intro.feature.multiRegistry')}</h3>
+            <p className="doc-feature-description">{t('docs.intro.feature.multiRegistryDesc')}</p>
           </div>
 
           <div className="doc-feature-card">
             <div className="doc-feature-icon">
               <Layers size={22} />
             </div>
-            <h3 className="doc-feature-title">Multi-Platform Images</h3>
-            <p className="doc-feature-description">
-              Handle amd64 and arm64 architectures automatically for seamless deployment.
-            </p>
+            <h3 className="doc-feature-title">{t('docs.intro.feature.multiPlatform')}</h3>
+            <p className="doc-feature-description">{t('docs.intro.feature.multiPlatformDesc')}</p>
           </div>
 
           <div className="doc-feature-card">
             <div className="doc-feature-icon">
               <Download size={22} />
             </div>
-            <h3 className="doc-feature-title">Auto Export</h3>
-            <p className="doc-feature-description">
-              Configure automatic export paths to streamline your CI/CD pipeline.
-            </p>
+            <h3 className="doc-feature-title">{t('docs.intro.feature.autoExport')}</h3>
+            <p className="doc-feature-description">{t('docs.intro.feature.autoExportDesc')}</p>
           </div>
 
           <div className="doc-feature-card">
             <div className="doc-feature-icon">
               <Bell size={22} />
             </div>
-            <h3 className="doc-feature-title">Webhook Notifications</h3>
-            <p className="doc-feature-description">
-              Get real-time notifications when images are pulled or failures occur.
-            </p>
+            <h3 className="doc-feature-title">{t('docs.intro.feature.webhook')}</h3>
+            <p className="doc-feature-description">{t('docs.intro.feature.webhookDesc')}</p>
           </div>
         </div>
 
-        <h2>Architecture Overview</h2>
-        <p>
-          DockerPull uses a pull-based architecture that ensures images are always verified
-          before export. The system works by connecting to your configured registries,
-          pulling the requested images, and optionally exporting them to your specified
-          directory.
-        </p>
+        <h2>{t('docs.intro.archTitle')}</h2>
+        <p>{t('docs.intro.archDesc')}</p>
 
-        <CodeBlock
-          title="System Architecture"
-          language="Diagram"
-          code={`┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Registry      │────▶│   DockerPull      │────▶│   Export Path   │
-│  (Docker Hub)   │     │   (Backend)     │     │   (Tar Files)   │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                                │
-                                ▼
-                        ┌───────────┐
-                        │  Webhook  │
-                        │  Notify   │
-                        └───────────┘`}
-        />
+        <div className="doc-architecture-diagram">
+          <div className="doc-architecture-header">
+            <span className="doc-architecture-title">{t('docs.intro.archDiagram')}</span>
+            <span className="doc-architecture-badge">DIAGRAM</span>
+          </div>
+          <div className="doc-architecture-content">
+            <div className="doc-architecture-flow">
+              <div className="doc-arch-node">
+                <div className="doc-arch-icon doc-arch-icon-registry">
+                  <Globe size={24} />
+                </div>
+                <div className="doc-arch-label">{t('docs.intro.archRegistry')}</div>
+                <div className="doc-arch-sublabel">{t('docs.intro.archRegistrySub')}</div>
+              </div>
+
+              <div className="doc-arch-arrow">
+                <div className="doc-arch-arrow-line"></div>
+                <div className="doc-arch-arrow-head">▶</div>
+              </div>
+
+              <div className="doc-arch-node doc-arch-node-main">
+                <div className="doc-arch-icon doc-arch-icon-main">
+                  <Download size={26} />
+                </div>
+                <div className="doc-arch-label">{t('docs.intro.archDockerPull')}</div>
+                <div className="doc-arch-sublabel">{t('docs.intro.archDockerPullSub')}</div>
+              </div>
+
+              <div className="doc-arch-arrow">
+                <div className="doc-arch-arrow-line"></div>
+                <div className="doc-arch-arrow-head">▶</div>
+              </div>
+
+              <div className="doc-arch-node">
+                <div className="doc-arch-icon doc-arch-icon-export">
+                  <FolderOpen size={24} />
+                </div>
+                <div className="doc-arch-label">{t('docs.intro.archExport')}</div>
+                <div className="doc-arch-sublabel">{t('docs.intro.archExportSub')}</div>
+              </div>
+            </div>
+
+            <div className="doc-arch-webhook-section">
+              <div className="doc-arch-webhook-connector">
+                <div className="doc-arch-webhook-line"></div>
+                <div className="doc-arch-webhook-arrow">▼</div>
+              </div>
+              <div className="doc-arch-node doc-arch-node-webhook">
+                <div className="doc-arch-icon doc-arch-icon-webhook">
+                  <Bell size={22} />
+                </div>
+                <div className="doc-arch-label">{t('docs.intro.archWebhook')}</div>
+                <div className="doc-arch-sublabel">{t('docs.intro.archWebhookSub')}</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="doc-callout doc-callout-tip">
-          <div className="doc-callout-icon">
-            <Sparkles size={18} />
+          <div className="doc-callout-header">
+            <Sparkles size={20} className="doc-callout-icon" />
+            <span className="doc-callout-title">{t('docs.intro.tipTitle')}</span>
           </div>
-          <div className="doc-callout-content">
-            <div className="doc-callout-title">Pro Tip</div>
-            <p className="doc-callout-text">
-              DockerPull uses a pull-based architecture, ensuring images are always verified
-              before export. This provides an additional layer of security and validation.
-            </p>
+          <div className="doc-callout-body">
+            <p className="doc-callout-text">{t('docs.intro.tipDesc')}</p>
           </div>
-        </div>
-
-        <h2>Next Steps</h2>
-        <p>
-          Ready to get started? Follow our Quick Start guide to get up and running in under
-          5 minutes, or dive into the Installation guide to deploy DockerPull in your environment.
-        </p>
-
-        <div className="doc-quick-links">
-          <a href="/docs/quick-start" className="doc-quick-link">
-            <ArrowRight size={20} className="doc-quick-link-icon" />
-            <span className="doc-quick-link-title">Quick Start</span>
-            <p className="doc-quick-link-description">
-              Get up and running with DockerPull in under 5 minutes.
-            </p>
-          </a>
-
-          <a href="/docs/installation" className="doc-quick-link">
-            <Download size={20} className="doc-quick-link-icon" />
-            <span className="doc-quick-link-title">Installation</span>
-            <p className="doc-quick-link-description">
-              Deploy DockerPull using Docker for easy setup and management.
-            </p>
-          </a>
-
-          <a href="/docs/image-management" className="doc-quick-link">
-            <Layers size={20} className="doc-quick-link-icon" />
-            <span className="doc-quick-link-title">Image Management</span>
-            <p className="doc-quick-link-description">
-              Learn how to add, monitor, and manage container images.
-            </p>
-          </a>
         </div>
       </div>
 
-      {/* Page Navigation */}
       <div className="doc-page-nav">
         <div></div>
         <a href="/docs/quick-start" className="doc-page-nav-next">
-          <span className="doc-page-nav-label">Next</span>
-          <span className="doc-page-nav-title">Quick Start →</span>
+          <span className="doc-page-nav-label">{t('docs.next')}</span>
+          <span className="doc-page-nav-title">{t('docs.quickStart.title')} →</span>
         </a>
       </div>
     </div>

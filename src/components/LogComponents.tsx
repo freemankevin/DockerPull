@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Plus, Clock, Download, CheckCircle, AlertCircle, ArrowRightFromLine, ArrowRightLeft, ChevronDown, ChevronUp, Copy } from 'lucide-react'
+import { useLanguage } from '../context/LanguageContext'
 import { ACTION_META_LABELS } from '../constants/logs'
 
 const ACTION_ICONS: Record<string, React.ReactNode> = {
@@ -14,14 +15,27 @@ const ACTION_ICONS: Record<string, React.ReactNode> = {
   PLATFORM_CHANGED: <ArrowRightLeft size={11} />,
 }
 
+const ACTION_LABEL_KEYS: Record<string, string> = {
+  CREATE:         'action.created',
+  UPDATE:         'action.updated',
+  PULL_START:     'action.pulling',
+  PULL_SUCCESS:   'action.success',
+  PULL_FAILED:    'action.failed',
+  EXPORT_START:   'action.exporting',
+  EXPORT_SUCCESS: 'action.exported',
+  EXPORT_FAILED:  'action.failed',
+  PLATFORM_CHANGED: 'action.changed',
+}
+
 export function ActionBadge({ action }: { action: string }) {
+  const { t } = useLanguage()
   const meta = ACTION_META_LABELS[action] || { 
-    label: action, 
     color: 'var(--text-secondary)', 
     bg: 'var(--bg-tertiary)', 
     border: 'var(--border-color)',
   }
   const icon = ACTION_ICONS[action] || null
+  const label = ACTION_LABEL_KEYS[action] ? t(ACTION_LABEL_KEYS[action]) : action
   
   return (
     <span style={{
@@ -34,7 +48,7 @@ export function ActionBadge({ action }: { action: string }) {
       lineHeight: 1.5,
     }}>
       {icon}
-      {meta.label}
+      {label}
     </span>
   )
 }
@@ -137,6 +151,7 @@ export function ExpandableText({
   color?: string
   showCopy?: boolean
 }) {
+  const { t } = useLanguage()
   const isExpanded = expandedLogs.has(expandKey)
   const [isOverflowing, setIsOverflowing] = useState(false)
   const textRef = useRef<HTMLSpanElement>(null)
@@ -219,7 +234,7 @@ export function ExpandableText({
               verticalAlign: 'middle',
               borderRadius: '3px',
             }}
-            title={copied ? 'Copied!' : 'Copy message'}
+            title={copied ? t('copy.copied') : t('copy.copyName')}
           >
             {copied ? <CheckCircle size={12} /> : <Copy size={12} />}
           </button>
@@ -239,7 +254,6 @@ export function ExpandableText({
             flexShrink: 0,
             lineHeight: 1,
           }}
-          title="Expand"
         >
           <ChevronDown size={12} />
         </button>
@@ -258,7 +272,6 @@ export function ExpandableText({
             flexShrink: 0,
             lineHeight: 1,
           }}
-          title="Collapse"
         >
           <ChevronUp size={12} />
         </button>

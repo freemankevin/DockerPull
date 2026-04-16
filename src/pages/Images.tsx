@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Trash2, Download, RefreshCw, CheckCircle } from 'lucide-react'
+import { Trash2, Download, RefreshCw, CheckCircle, Plus } from 'lucide-react'
 import { useImages } from '../hooks/useImages'
 import { useConfig } from '../hooks/useConfig'
 import { useNotification } from '../context/NotificationContext'
 import { useToast } from '../context/ToastContext'
+import { useLanguage } from '../context/LanguageContext'
 import { imagesApi } from '../api'
 import { detectRegistry, getShortName, parseImageName } from '../utils/imageUtils'
 import { RegistryIcon, CopyButton, PlatformBadge, StatusBadge } from '../components/ImageComponents'
@@ -12,6 +13,7 @@ import ImageModal from '../components/ImageModal'
 export default function Images() {
   const { addNotification } = useNotification()
   const { showToast } = useToast()
+  const { t } = useLanguage()
   const { images, loading, createImage, deleteImage, pullImage, exportImage } = useImages(addNotification)
   const { config } = useConfig()
   const [showModal, setShowModal] = useState(false)
@@ -60,11 +62,11 @@ export default function Images() {
           const checkRes = await imagesApi.checkPlatforms(name, tag)
           const supportedPlatforms = checkRes.data.platforms || []
           if (!supportedPlatforms.includes('linux/arm64')) {
-            showToast('info', 'Image does not support linux/arm64, pulling linux/amd64 only')
+            showToast('info', t('toast.imageNoArm64'))
             platformsToPull = platformsToPull.filter(p => p !== 'linux/arm64')
           }
         } catch {
-          showToast('info', 'Unable to verify image architecture, continuing with selected platforms')
+          showToast('info', t('toast.unableVerify'))
         }
       }
 
@@ -89,9 +91,9 @@ export default function Images() {
           }
         }
         if (duplicateCount > 0) {
-          showToast('warning', `${duplicateCount} task(s) skipped (already exists), ${addedCount} task(s) added`)
+          showToast('warning', t('toast.tasksSkipped').replace('{count}', String(duplicateCount)).replace('{added}', String(addedCount)))
         } else {
-          showToast('success', `Added ${addedCount} image task(s)`)
+          showToast('success', t('toast.tasksAdded').replace('{count}', String(addedCount)))
         }
       } else {
         const { name, tag } = parseImageName(formData.fullName)
@@ -104,9 +106,9 @@ export default function Images() {
           }
         }
         if (duplicateCount > 0) {
-          showToast('warning', `${duplicateCount} task(s) skipped (already exists), ${addedCount} task(s) added`)
+          showToast('warning', t('toast.tasksSkipped').replace('{count}', String(duplicateCount)).replace('{added}', String(addedCount)))
         } else {
-          showToast('success', `Added ${addedCount} image task(s)`)
+          showToast('success', t('toast.tasksAdded').replace('{count}', String(addedCount)))
         }
       }
 
@@ -137,7 +139,7 @@ export default function Images() {
     <div className="content-center">
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <h1>Images</h1>
+          <h1>{t('images.title')}</h1>
           {images.length > 0 && (
             <span style={{
               background: 'var(--bg-tertiary)',
@@ -154,7 +156,8 @@ export default function Images() {
         </div>
         <div className="page-header-actions">
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-            Add
+            <Plus size={16} />
+            {t('images.add')}
           </button>
         </div>
       </div>
@@ -164,13 +167,13 @@ export default function Images() {
           <table className="table">
             <thead>
               <tr>
-                <th>Image</th>
-                <th>Platform</th>
-                <th>Status</th>
-                <th>Retries</th>
-                <th>Export Status</th>
-                <th>Created</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th>{t('images.table.image')}</th>
+                <th>{t('images.table.platform')}</th>
+                <th>{t('images.table.status')}</th>
+                <th>{t('images.table.retries')}</th>
+                <th>{t('images.table.exportStatus')}</th>
+                <th>{t('images.table.created')}</th>
+                <th style={{ textAlign: 'right' }}>{t('images.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -189,8 +192,7 @@ export default function Images() {
                         <RegistryIcon registry={detectRegistry(img.name)} />
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <span style={{
-                          fontFamily: 'var(--font-mono)',
+                        <span className="image-name" style={{
                           fontSize: '13px',
                           color: 'var(--text-primary)',
                           fontWeight: 500,
@@ -218,7 +220,7 @@ export default function Images() {
                         fontSize: '13px',
                       }}>
                         <CheckCircle size={12} />
-                        Exported
+                        {t('images.exported')}
                       </span>
                     ) : (
                       <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>—</span>
@@ -238,17 +240,17 @@ export default function Images() {
                         <button
                           className="btn btn-sm btn-secondary"
                           onClick={() => pullImage(img.id)}
-                          title="Retry pull"
+                          title={t('images.retry')}
                         >
                           <RefreshCw size={13} />
-                          Retry
+                          {t('images.retry')}
                         </button>
                       )}
                       {img.status === 'success' && (
                         <button
                           className="btn btn-sm btn-success"
                           onClick={() => exportImage(img.id)}
-                          title="Download"
+                          title={t('images.download')}
                         >
                           <Download size={13} />
                         </button>
@@ -256,7 +258,7 @@ export default function Images() {
                       <button
                         className="btn btn-sm btn-danger"
                         onClick={() => deleteImage(img.id)}
-                        title="Delete"
+                        title={t('images.delete')}
                       >
                         <Trash2 size={13} />
                       </button>
@@ -294,10 +296,9 @@ export default function Images() {
               </div>
             </div>
             <div className="empty-state-content" onClick={(e) => e.stopPropagation()}>
-              <div className="empty-state-title">Pull from any container registry</div>
+              <div className="empty-state-title">{t('images.empty.title')}</div>
               <div className="empty-state-description">
-                Add images from Docker Hub, GitHub, Quay, or GCR<br />
-                to manage and distribute centrally.
+                {t('images.empty.desc')}
               </div>
               <div className="empty-state-tags">
                 <span className="empty-state-tag">docker.io</span>

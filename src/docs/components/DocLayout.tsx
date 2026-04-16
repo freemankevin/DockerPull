@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { NavLink, useLocation, Outlet, useNavigate } from 'react-router-dom'
-import { Menu, X, Search, FileText, Sun, Moon } from 'lucide-react'
+import { Menu, X, Search, FileText, Sun, Moon, Globe } from 'lucide-react'
 import { docSections } from '../data'
 import { searchDocs, getExcerpt } from '../searchData'
+import { useLanguage } from '../../context/LanguageContext'
 import './DocLayout.css'
 
 export default function DocLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [showLangMenu, setShowLangMenu] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('dockpull-theme')
     if (saved === 'dark' || saved === 'light') {
@@ -16,10 +19,12 @@ export default function DocLayout() {
     }
     return document.documentElement.getAttribute('data-theme') === 'dark'
   })
+  const { language, setLanguage, t } = useLanguage()
   const location = useLocation()
   const navigate = useNavigate()
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
+  const langMenuRef = useRef<HTMLDivElement>(null)
 
   // Filter search results using fuzzy search
   const searchResults = useMemo(() => {
@@ -73,6 +78,16 @@ export default function DocLayout() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
+        setShowLangMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showLangMenu])
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchResults.length > 0) {
@@ -85,6 +100,11 @@ export default function DocLayout() {
     navigate(path)
     setShowSearchResults(false)
     setSearchQuery('')
+  }
+
+  const handleLanguageChange = (lang: 'en' | 'zh') => {
+    setLanguage(lang)
+    setShowLangMenu(false)
   }
 
   // Highlight matching text in search results
@@ -119,67 +139,106 @@ export default function DocLayout() {
           {/* Left - empty */}
           <div className="doc-header-left" />
 
-          {/* Center - Search */}
-          <div className="doc-header-center">
-            <div ref={searchContainerRef} className="doc-search-container">
+          {/* Center - empty */}
+          <div className="doc-header-center" />
+
+          {/* Right - Search, Language Toggle, Theme Toggle & GitHub */}
+          <div className="doc-header-right">
+            {/* Search */}
+            <div ref={searchContainerRef} className={`doc-search-container ${isSearchFocused ? 'doc-search-focused' : ''}`}>
               <form className="doc-search-form" onSubmit={handleSearch}>
                 <Search size={14} className="doc-search-icon" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   className="doc-search-input"
-                  placeholder="Search..."
+                  placeholder={t('search.placeholder')}
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value)
                     setShowSearchResults(true)
                   }}
-                  onFocus={() => setShowSearchResults(true)}
+                  onFocus={() => {
+                    setIsSearchFocused(true)
+                    setShowSearchResults(true)
+                  }}
+                  onBlur={() => setIsSearchFocused(false)}
                 />
                 <kbd className="doc-search-kbd">⌘ K</kbd>
               </form>
 
               {/* Search Results Dropdown */}
-              {showSearchResults && searchQuery.trim() && (
+              {showSearchResults && (
                 <div className="doc-search-results">
-                  {searchResults.length > 0 ? (
-                    <ul className="doc-search-results-list">
-                      {searchResults.map((item) => (
-                        <li key={item.path}>
-                          <button
-                            className="doc-search-result-item"
-                            onClick={() => handleResultClick(item.path)}
-                          >
-                            <div className="doc-search-result-header">
-                              <FileText size={14} className="doc-search-result-icon" />
-                              <span className="doc-search-result-title">
-                                {highlightMatch(item.title, searchQuery)}
+                  {searchQuery.trim() ? (
+                    searchResults.length > 0 ? (
+                      <ul className="doc-search-results-list">
+                        {searchResults.map((item) => (
+                          <li key={item.path}>
+                            <button
+                              className="doc-search-result-item"
+                              onClick={() => handleResultClick(item.path)}
+                            >
+                              <div className="doc-search-result-header">
+                                <FileText size={14} className="doc-search-result-icon" />
+                                <span className="doc-search-result-title">
+                                  {highlightMatch(item.title, searchQuery)}
+                                </span>
+                              </div>
+                              <span className="doc-search-result-excerpt">
+                                {highlightMatch(getExcerpt(item, searchQuery), searchQuery)}
                               </span>
-                            </div>
-                            <span className="doc-search-result-excerpt">
-                              {highlightMatch(getExcerpt(item, searchQuery), searchQuery)}
-                            </span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="doc-search-no-results">{t('search.noResults')} "{searchQuery}"</div>
+                    )
                   ) : (
-                    <div className="doc-search-no-results">No results found for "{searchQuery}"</div>
+                    <div className="doc-search-hint">{t('search.hint')}</div>
                   )}
                 </div>
               )}
             </div>
-          </div>
+            
+            {/* Language Toggle */}
+            <div ref={langMenuRef} className="doc-lang-container">
+              <button
+                type="button"
+                className="doc-header-link doc-lang-toggle"
+                onClick={() => setShowLangMenu(!showLangMenu)}
+                aria-label={t('lang.switch')}
+                title={t('lang.switch')}
+              >
+                <Globe size={18} />
+                <span className="doc-lang-label">{language === 'zh' ? '中' : 'EN'}</span>
+              </button>
+              {showLangMenu && (
+                <div className="doc-lang-menu">
+                  <button
+                    className={`doc-lang-item ${language === 'en' ? 'doc-lang-item-active' : ''}`}
+                    onClick={() => handleLanguageChange('en')}
+                  >
+                    {t('lang.en')}
+                  </button>
+                  <button
+                    className={`doc-lang-item ${language === 'zh' ? 'doc-lang-item-active' : ''}`}
+                    onClick={() => handleLanguageChange('zh')}
+                  >
+                    {t('lang.zh')}
+                  </button>
+                </div>
+              )}
+            </div>
 
-          {/* Right - Theme Toggle & GitHub */}
-          <div className="doc-header-right">
             {/* Theme Toggle */}
             <button
               type="button"
               className="doc-header-link"
               onClick={toggleTheme}
-              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label={isDarkMode ? t('theme.light') : t('theme.dark')}
+              title={isDarkMode ? t('theme.light') : t('theme.dark')}
             >
               {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
@@ -231,8 +290,8 @@ export default function DocLayout() {
 
           <nav className="doc-nav">
             {docSections.map((section) => (
-              <div key={section.title} className="doc-nav-section">
-                <h3 className="doc-nav-section-title">{section.title}</h3>
+              <div key={section.titleKey} className="doc-nav-section">
+                <h3 className="doc-nav-section-title">{t(section.titleKey)}</h3>
                 <ul className="doc-nav-list">
                   {section.items.map((item) => (
                     <li key={item.id}>
@@ -243,7 +302,7 @@ export default function DocLayout() {
                         }
                       >
                         <item.icon size={16} className="doc-nav-link-icon" />
-                        <span className="doc-nav-link-text">{item.title}</span>
+                        <span className="doc-nav-link-text">{t(item.titleKey)}</span>
                       </NavLink>
                     </li>
                   ))}

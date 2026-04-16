@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useLanguage } from '../context/LanguageContext'
 import { Eye, EyeOff, Lock, User } from 'lucide-react'
 import '../Login.css'
 
@@ -11,6 +12,7 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
+  const { t } = useLanguage()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,10 +22,10 @@ export default function Login() {
     try {
       const success = await login(username, password)
       if (!success) {
-        setError('Invalid username or password')
+        setError(t('login.invalidCredentials'))
       }
     } catch {
-      setError('An error occurred. Please try again.')
+      setError(t('login.error'))
     } finally {
       setLoading(false)
     }
@@ -42,9 +44,9 @@ export default function Login() {
         <div className="login-overlay" />
         <div className="login-left-content">
           <div className="login-brand">
-            <div className="login-title">DockerPull</div>
+            <div className="login-title">{t('login.brandTitle')}</div>
             <p className="login-subtitle">
-              A lightweight Docker image management system for pulling and organizing container images with ease
+              {t('login.brandDesc')}
             </p>
           </div>
           <div className="login-version">© 2026 DockerPull — v2.4.1</div>
@@ -58,15 +60,15 @@ export default function Login() {
       <section className="login-form-container">
         <div className="login-form-wrapper">
           <div className="login-form-header">
-            <h2>Sign In</h2>
-            <p>Enter your credentials to access the system</p>
+            <h2>{t('login.title')}</h2>
+            <p>{t('login.subtitle')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
             {error && <div className="login-error">{error}</div>}
 
             <div className="login-field">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="username">{t('login.username')}</label>
               <div className="login-input-wrapper">
                 <User size={16} className="login-input-icon" />
                 <input
@@ -74,7 +76,7 @@ export default function Login() {
                   id="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter your username"
+                  placeholder={t('login.usernamePlaceholder')}
                   required
                   autoComplete="username"
                 />
@@ -82,7 +84,7 @@ export default function Login() {
             </div>
 
             <div className="login-field">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t('login.password')}</label>
               <div className="login-input-wrapper">
                 <Lock size={16} className="login-input-icon" />
                 <input
@@ -90,7 +92,7 @@ export default function Login() {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t('login.passwordPlaceholder')}
                   required
                   autoComplete="current-password"
                 />
@@ -113,19 +115,19 @@ export default function Login() {
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
-                Remember me
+                {t('login.rememberMe')}
               </label>
-              <a href="#" className="login-forgot">Forgot password?</a>
+              <a href="#" className="login-forgot">{t('login.forgotPassword')}</a>
             </div>
 
             <button type="submit" className="login-submit" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? t('login.submitting') : t('login.submit')}
             </button>
           </form>
 
           <div className="login-divider">
             <div className="login-divider-line" />
-            <span className="login-divider-text">or</span>
+            <span className="login-divider-text">{t('login.or')}</span>
             <div className="login-divider-line" />
           </div>
 
@@ -136,11 +138,11 @@ export default function Login() {
               <rect x="14" y="14" width="7" height="7" rx="1" />
               <rect x="3" y="14" width="7" height="7" rx="1" />
             </svg>
-            Continue with SSO
+            {t('login.sso')}
           </button>
 
           <p className="login-form-footer">
-            New to DockerPull? <a href="#">Request access</a>
+            {t('login.newUser')} <a href="#">{t('login.requestAccess')}</a>
           </p>
         </div>
       </section>

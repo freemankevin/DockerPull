@@ -1,7 +1,8 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
-import { Camera, Sun, Moon, Power, MoreVertical } from 'lucide-react'
+import { Camera, Sun, Moon, Power, MoreVertical, Globe } from 'lucide-react'
 import { useAuth } from './AuthContext'
 import { useTheme } from './ThemeContext'
+import { useLanguage } from './LanguageContext'
 
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp']
 const MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -9,6 +10,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024
 export function UserMenu() {
   const { user, logout, updateAvatar } = useAuth()
   const { theme, toggleTheme } = useTheme()
+  const { language, setLanguage, t } = useLanguage()
   const [open, setOpen] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -30,11 +32,11 @@ export function UserMenu() {
     const file = e.target.files?.[0]
     if (!file) return
     if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      alert('Please upload a valid image file (JPEG, PNG, GIF, WebP, BMP)')
+      alert(t('user.uploadValid'))
       return
     }
     if (file.size > MAX_FILE_SIZE) {
-      alert('File size must be less than 10MB')
+      alert(t('user.fileSize'))
       return
     }
     const reader = new FileReader()
@@ -66,7 +68,7 @@ export function UserMenu() {
         </div>
         <div className="user-details">
           <div className="user-name">{user?.username || 'Admin'}</div>
-          <div className="user-role">Administrator</div>
+          <div className="user-role">{t('user.admin')}</div>
         </div>
         <button
           className="user-menu-trigger"
@@ -106,19 +108,24 @@ export function UserMenu() {
             </div>
             <div className="user-menu-info">
               <div className="user-menu-name">{user?.username || 'Admin'}</div>
-              <div className="user-menu-role">Administrator</div>
-              <div className="user-menu-hint">Click avatar to change</div>
+              <div className="user-menu-role">{t('user.admin')}</div>
+              <div className="user-menu-hint">{t('user.clickChange')}</div>
             </div>
           </div>
 
           <button className="user-menu-item" onClick={toggleTheme}>
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+            <span>{theme === 'dark' ? t('theme.light') : t('theme.dark')}</span>
+          </button>
+
+          <button className="user-menu-item" onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}>
+            <Globe size={16} />
+            <span>{t('lang.switch')}</span>
           </button>
 
           <button className="user-menu-item user-menu-danger" onClick={handleLogout}>
             <Power size={16} />
-            <span>Log out</span>
+            <span>{t('user.logout')}</span>
           </button>
         </div>
       )}

@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
 import { Sparkles } from 'lucide-react'
+import { useLanguage } from '../../context/LanguageContext'
 import '../components/DocPage.css'
 import CodeBlock from '../components/CodeBlock'
 
 export default function Installation() {
+  const { t, language } = useLanguage()
+  
   useEffect(() => {
-    document.title = 'Installation - DockerPull Documentation'
-  }, [])
+    document.title = language === 'zh' ? '安装 - DockerPull 文档' : 'Installation - DockerPull Documentation'
+  }, [language])
 
   return (
     <div className="doc-page">
@@ -14,20 +17,15 @@ export default function Installation() {
         <div className="doc-page-breadcrumb">
           <a href="/docs/introduction">Docs</a>
           <span className="doc-page-breadcrumb-separator">/</span>
-          <span>Getting Started</span>
+          <span>{t('docs.section.gettingStarted')}</span>
         </div>
-        <h1 className="doc-page-title">Installation</h1>
-        <p className="doc-page-description">
-          Deploy DockerPull using Docker for easy setup and management. Choose the method that works best for your environment.
-        </p>
+        <h1 className="doc-page-title">{t('docs.installation.title')}</h1>
+        <p className="doc-page-description">{t('docs.installation.heroDesc')}</p>
       </div>
 
       <div className="doc-content">
-        <h2>Docker Compose (Recommended)</h2>
-        <p>
-          The easiest way to get started with DockerPull is using Docker Compose. This method
-          handles all the configuration and dependencies automatically.
-        </p>
+        <h2>{t('docs.installation.compose.title')}</h2>
+        <p>{t('docs.installation.compose.desc')}</p>
 
         <CodeBlock
           title="docker-compose.yml"
@@ -50,7 +48,7 @@ services:
     restart: unless-stopped`}
         />
 
-        <p>Save the file and run:</p>
+        <p>{language === 'zh' ? '保存文件并运行：' : 'Save the file and run:'}</p>
 
         <CodeBlock
           title="Terminal"
@@ -58,49 +56,45 @@ services:
           code={`docker-compose up -d`}
         />
 
-        <h2>Environment Variables</h2>
-        <p>
-          Configure DockerPull using the following environment variables:
-        </p>
+        <h2>{t('docs.installation.env.title')}</h2>
+        <p>{t('docs.installation.env.desc')}</p>
 
         <div className="doc-table-wrapper">
           <table className="doc-table">
             <thead>
               <tr>
-                <th>Variable</th>
-                <th>Description</th>
-                <th>Required</th>
+                <th>{t('docs.installation.envTable.variable')}</th>
+                <th>{t('docs.installation.envTable.description')}</th>
+                <th>{t('docs.installation.envTable.required')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><code className="doc-inline-code">SECRET_KEY</code></td>
-                <td>Secret key for session encryption</td>
-                <td>Yes</td>
+                <td>{t('docs.installation.env.secretKey')}</td>
+                <td>{t('docs.installation.env.yes')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">ADMIN_PASSWORD</code></td>
-                <td>Initial admin password</td>
-                <td>Yes</td>
+                <td>{t('docs.installation.env.adminPassword')}</td>
+                <td>{t('docs.installation.env.yes')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">EXPORT_PATH</code></td>
-                <td>Default export directory</td>
-                <td>No (default: /app/exports)</td>
+                <td>{t('docs.installation.env.exportPath')}</td>
+                <td>{t('docs.installation.env.no')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">PORT</code></td>
-                <td>Server port</td>
-                <td>No (default: 8080)</td>
+                <td>{t('docs.installation.env.port')}</td>
+                <td>{t('docs.installation.env.noPort')}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Directory Structure</h2>
-        <p>
-          DockerPull uses the following directory structure:
-        </p>
+        <h2>{t('docs.installation.dir.title')}</h2>
+        <p>{t('docs.installation.dir.desc')}</p>
 
         <div className="doc-file-tree">
           <div className="doc-file-tree-line">
@@ -109,17 +103,17 @@ services:
           <div className="doc-file-tree-line">
             <span>├── </span>
             <span className="doc-file-tree-dir">data/</span>
-            <span className="doc-file-tree-comment"># Database and configuration</span>
+            <span className="doc-file-tree-comment">{t('docs.installation.dir.comment')}</span>
           </div>
           <div className="doc-file-tree-line">
             <span>│   └── </span>
             <span className="doc-file-tree-file">dockpull.db</span>
-            <span className="doc-file-tree-comment"># SQLite database</span>
+            <span className="doc-file-tree-comment">{t('docs.installation.dir.comment2')}</span>
           </div>
           <div className="doc-file-tree-line">
             <span>├── </span>
             <span className="doc-file-tree-dir">exports/</span>
-            <span className="doc-file-tree-comment"># Exported image tar files</span>
+            <span className="doc-file-tree-comment">{t('docs.installation.dir.comment3')}</span>
           </div>
           <div className="doc-file-tree-line">
             <span>│   └── </span>
@@ -128,28 +122,22 @@ services:
           <div className="doc-file-tree-line">
             <span>└── </span>
             <span className="doc-file-tree-dir">logs/</span>
-            <span className="doc-file-tree-comment"># Application logs</span>
+            <span className="doc-file-tree-comment">{t('docs.installation.dir.comment4')}</span>
           </div>
         </div>
 
         <div className="doc-callout doc-callout-tip">
-          <div className="doc-callout-icon">
-            <Sparkles size={18} />
+          <div className="doc-callout-header">
+            <Sparkles size={20} className="doc-callout-icon" />
+            <span className="doc-callout-title">{t('docs.proTip')}</span>
           </div>
-          <div className="doc-callout-content">
-            <div className="doc-callout-title">Pro Tip</div>
-            <p className="doc-callout-text">
-              Mount the <code className="doc-inline-code">exports</code> volume to a shared
-              location for easy access from other services. This makes it simple to integrate
-              DockerPull into your existing CI/CD pipeline.
-            </p>
+          <div className="doc-callout-body">
+            <p className="doc-callout-text">{t('docs.installation.tip')}</p>
           </div>
         </div>
 
-        <h2>Docker Run (Alternative)</h2>
-        <p>
-          If you prefer not to use Docker Compose, you can run DockerPull directly:
-        </p>
+        <h2>{t('docs.installation.run.title')}</h2>
+        <p>{t('docs.installation.run.desc')}</p>
 
         <CodeBlock
           title="Terminal"
@@ -164,10 +152,8 @@ services:
   dockpull:latest`}
         />
 
-        <h2>Accessing the Application</h2>
-        <p>
-          Once running, access the DockerPull web interface at:
-        </p>
+        <h2>{t('docs.installation.access.title')}</h2>
+        <p>{t('docs.installation.access.desc')}</p>
 
         <CodeBlock
           title="URL"
@@ -175,20 +161,17 @@ services:
           code={`http://localhost:8080`}
         />
 
-        <p>
-          Log in with the admin credentials you configured in the environment variables.
-        </p>
+        <p>{t('docs.installation.access.login')}</p>
       </div>
 
-      {/* Page Navigation */}
       <div className="doc-page-nav">
         <a href="/docs/quick-start" className="doc-page-nav-prev">
-          <span className="doc-page-nav-label">Previous</span>
-          <span className="doc-page-nav-title">← Quick Start</span>
+          <span className="doc-page-nav-label">{t('docs.prev')}</span>
+          <span className="doc-page-nav-title">← {t('docs.quickStart.title')}</span>
         </a>
         <a href="/docs/image-management" className="doc-page-nav-next">
-          <span className="doc-page-nav-label">Next</span>
-          <span className="doc-page-nav-title">Image Management →</span>
+          <span className="doc-page-nav-label">{t('docs.next')}</span>
+          <span className="doc-page-nav-title">{t('docs.imageManagement.title')} →</span>
         </a>
       </div>
     </div>

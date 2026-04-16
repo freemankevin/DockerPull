@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
 import { Check, Sparkles } from 'lucide-react'
+import { useLanguage } from '../../context/LanguageContext'
 import CodeBlock from '../components/CodeBlock'
 import '../components/DocPage.css'
 
 export default function ImageManagement() {
+  const { t, language } = useLanguage()
+  
   useEffect(() => {
-    document.title = 'Image Management - DockerPull Documentation'
-  }, [])
+    document.title = language === 'zh' ? '镜像管理 - DockerPull 文档' : 'Image Management - DockerPull Documentation'
+  }, [language])
 
   return (
     <div className="doc-page">
@@ -14,83 +17,76 @@ export default function ImageManagement() {
         <div className="doc-page-breadcrumb">
           <a href="/docs/introduction">Docs</a>
           <span className="doc-page-breadcrumb-separator">/</span>
-          <span>Core Features</span>
+          <span>{t('docs.section.coreFeatures')}</span>
         </div>
-        <h1 className="doc-page-title">Image Management</h1>
-        <p className="doc-page-description">
-          Learn how to add, monitor, and manage container images across multiple registries and platforms.
-        </p>
+        <h1 className="doc-page-title">{t('docs.imageManagement.title')}</h1>
+        <p className="doc-page-description">{t('docs.imageManagement.heroDesc')}</p>
       </div>
 
       <div className="doc-content">
-        <h2>Adding Images</h2>
-        <p>
-          DockerPull supports multiple image formats from various container registries.
-          You can add images individually or in batch mode.
-        </p>
+        <h2>{t('docs.imageManagement.add.title')}</h2>
+        <p>{t('docs.imageManagement.add.desc')}</p>
 
-        <h3>Supported Formats</h3>
+        <h3>{t('docs.imageManagement.format.title')}</h3>
         <div className="doc-table-wrapper">
           <table className="doc-table">
             <thead>
               <tr>
-                <th>Format</th>
-                <th>Registry</th>
-                <th>Auth Required</th>
+                <th>{t('docs.imageManagement.format.format')}</th>
+                <th>{t('docs.imageManagement.format.registry')}</th>
+                <th>{t('docs.imageManagement.format.auth')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><code className="doc-inline-code">nginx:latest</code></td>
                 <td>Docker Hub</td>
-                <td>Optional</td>
+                <td>{t('docs.imageManagement.format.optional')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">docker.io/library/nginx:latest</code></td>
                 <td>Docker Hub (explicit)</td>
-                <td>Optional</td>
+                <td>{t('docs.imageManagement.format.optional')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">ghcr.io/owner/repo:v1.0</code></td>
                 <td>GitHub Container Registry</td>
-                <td>Recommended</td>
+                <td>{t('docs.imageManagement.format.recommended')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">quay.io/org/image:tag</code></td>
                 <td>Quay.io</td>
-                <td>For private</td>
+                <td>{t('docs.imageManagement.format.forPrivate')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">registry.cn-hangzhou.aliyuncs.com/...</code></td>
                 <td>Alibaba ACR</td>
-                <td>For private</td>
+                <td>{t('docs.imageManagement.format.forPrivate')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">public.ecr.aws/...</code></td>
                 <td>AWS ECR Public</td>
-                <td>No</td>
+                <td>{t('docs.imageManagement.format.no')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">*.amazonaws.com/...</code></td>
                 <td>AWS ECR Private</td>
-                <td>Required</td>
+                <td>{t('docs.imageManagement.format.required')}</td>
               </tr>
               <tr>
                 <td><code className="doc-inline-code">*.pkg.dev/...</code></td>
                 <td>Google Artifact Registry</td>
-                <td>For private</td>
+                <td>{t('docs.imageManagement.format.forPrivate')}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h3>Batch Mode</h3>
-        <p>
-          Add multiple images at once by toggling batch mode. Enter one image per line:
-        </p>
+        <h3>{t('docs.imageManagement.batch.title')}</h3>
+        <p>{t('docs.imageManagement.batch.desc')}</p>
 
         <CodeBlock
-          title="Example Batch Input"
+          title={language === 'zh' ? '批量输入示例' : 'Example Batch Input'}
           language="Text"
           code={`nginx:latest
 redis:7-alpine
@@ -99,108 +95,92 @@ quay.io/prometheus/prometheus:v2.45.0`}
         />
 
         <div className="doc-callout doc-callout-info">
-          <div className="doc-callout-icon">
-            <Check size={18} />
+          <div className="doc-callout-header">
+            <Check size={20} className="doc-callout-icon" />
+            <span className="doc-callout-title">{t('docs.note')}</span>
           </div>
-          <div className="doc-callout-content">
-            <div className="doc-callout-title">Note</div>
-            <p className="doc-callout-text">
-              Duplicates are automatically skipped with a summary of added vs. skipped items.
-              Each image in batch mode uses the same platform selection.
-            </p>
+          <div className="doc-callout-body">
+            <p className="doc-callout-text">{t('docs.imageManagement.batch.note')}</p>
           </div>
         </div>
 
-        <h2>Status Types</h2>
-        <p>
-          Images progress through different states during their lifecycle:
-        </p>
+        <h2>{t('docs.imageManagement.status.title')}</h2>
+        <p>{t('docs.imageManagement.status.desc')}</p>
 
         <div className="doc-table-wrapper">
           <table className="doc-table">
             <thead>
               <tr>
-                <th>Status</th>
-                <th>Description</th>
-                <th>Action</th>
+                <th>{t('docs.imageManagement.statusTable.status')}</th>
+                <th>{t('docs.imageManagement.statusTable.description')}</th>
+                <th>{t('docs.imageManagement.statusTable.action')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><span className="doc-badge doc-badge-pending">Pending</span></td>
-                <td>Queued for processing</td>
-                <td>Wait for processing to start</td>
+                <td><span className="doc-badge doc-badge-pending">{t('status.pending')}</span></td>
+                <td>{t('docs.imageManagement.status.pending')}</td>
+                <td>{t('docs.imageManagement.status.pendingAction')}</td>
               </tr>
               <tr>
-                <td><span className="doc-badge doc-badge-pulling">Pulling</span></td>
-                <td>Currently downloading</td>
-                <td>Monitor progress in logs</td>
+                <td><span className="doc-badge doc-badge-pulling">{t('status.pulling')}</span></td>
+                <td>{t('docs.imageManagement.status.pulling')}</td>
+                <td>{t('docs.imageManagement.status.pullingAction')}</td>
               </tr>
               <tr>
-                <td><span className="doc-badge doc-badge-success">Success</span></td>
-                <td>Successfully pulled</td>
-                <td>Ready for export or use</td>
+                <td><span className="doc-badge doc-badge-success">{t('status.success')}</span></td>
+                <td>{t('docs.imageManagement.status.success')}</td>
+                <td>{t('docs.imageManagement.status.successAction')}</td>
               </tr>
               <tr>
-                <td><span className="doc-badge doc-badge-failed">Failed</span></td>
-                <td>Pull failed</td>
-                <td>Check logs and retry</td>
+                <td><span className="doc-badge doc-badge-failed">{t('status.failed')}</span></td>
+                <td>{t('docs.imageManagement.status.failed')}</td>
+                <td>{t('docs.imageManagement.status.failedAction')}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Platform Selection</h2>
-        <p>
-          When adding an image, you can select which platforms to pull:
-        </p>
+        <h2>{t('docs.imageManagement.platform.title')}</h2>
+        <p>{t('docs.imageManagement.platform.desc')}</p>
 
         <ul>
-          <li><strong>linux/amd64</strong> - Standard x86_64 architecture</li>
-          <li><strong>linux/arm64</strong> - ARM64 architecture for Apple Silicon, AWS Graviton, etc.</li>
+          <li><strong>linux/amd64</strong> - {t('docs.imageManagement.platform.amd64')}</li>
+          <li><strong>linux/arm64</strong> - {t('docs.imageManagement.platform.arm64')}</li>
         </ul>
 
         <div className="doc-callout doc-callout-tip">
-          <div className="doc-callout-icon">
-            <Sparkles size={18} />
+          <div className="doc-callout-header">
+            <Sparkles size={20} className="doc-callout-icon" />
+            <span className="doc-callout-title">{t('docs.proTip')}</span>
           </div>
-          <div className="doc-callout-content">
-            <div className="doc-callout-title">Pro Tip</div>
-            <p className="doc-callout-text">
-              Click the <strong>Retry</strong> button on failed images to attempt another pull
-              with the same configuration. This preserves your original settings.
-            </p>
+          <div className="doc-callout-body">
+            <p className="doc-callout-text">{t('docs.imageManagement.tip')}</p>
           </div>
         </div>
 
-        <h2>Managing Images</h2>
-        <p>
-          The Images page provides a comprehensive view of all your images with the following actions:
-        </p>
+        <h2>{t('docs.imageManagement.manage.title')}</h2>
+        <p>{t('docs.imageManagement.manage.desc')}</p>
 
         <ul>
-          <li><strong>Pull</strong> - Manually trigger a pull for pending or failed images</li>
-          <li><strong>Export</strong> - Download the image as a tar file</li>
-          <li><strong>Delete</strong> - Remove the image from DockerPull</li>
-          <li><strong>View Logs</strong> - Check detailed pull logs</li>
+          <li><strong>{language === 'zh' ? '拉取' : 'Pull'}</strong> - {t('docs.imageManagement.manage.pull')}</li>
+          <li><strong>{language === 'zh' ? '导出' : 'Export'}</strong> - {t('docs.imageManagement.manage.export')}</li>
+          <li><strong>{language === 'zh' ? '删除' : 'Delete'}</strong> - {t('docs.imageManagement.manage.delete')}</li>
+          <li><strong>{language === 'zh' ? '查看日志' : 'View Logs'}</strong> - {t('docs.imageManagement.manage.logs')}</li>
         </ul>
 
-        <h2>Auto-Export</h2>
-        <p>
-          Enable auto-export when adding an image to automatically export it after a successful pull.
-          Configure the default export path in <a href="/docs/settings">Settings</a>.
-        </p>
+        <h2>{t('docs.imageManagement.auto.title')}</h2>
+        <p>{t('docs.imageManagement.auto.desc')}</p>
       </div>
 
-      {/* Page Navigation */}
       <div className="doc-page-nav">
         <a href="/docs/installation" className="doc-page-nav-prev">
-          <span className="doc-page-nav-label">Previous</span>
-          <span className="doc-page-nav-title">← Installation</span>
+          <span className="doc-page-nav-label">{t('docs.prev')}</span>
+          <span className="doc-page-nav-title">← {t('docs.installation.title')}</span>
         </a>
         <a href="/docs/multi-platform" className="doc-page-nav-next">
-          <span className="doc-page-nav-label">Next</span>
-          <span className="doc-page-nav-title">Multi-Platform →</span>
+          <span className="doc-page-nav-label">{t('docs.next')}</span>
+          <span className="doc-page-nav-title">{t('docs.multiPlatform.title')} →</span>
         </a>
       </div>
     </div>

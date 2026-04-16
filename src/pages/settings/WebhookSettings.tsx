@@ -1,3 +1,4 @@
+import { useLanguage } from '../../context/LanguageContext'
 import SettingRow from '../../components/SettingRow'
 import Select from '../../components/Select'
 
@@ -7,9 +8,11 @@ interface WebhookSettingsProps {
 }
 
 export default function WebhookSettings({ getValue, setFormData }: WebhookSettingsProps) {
+  const { t } = useLanguage()
+
   return (
     <>
-      <SettingRow label="Enable Webhooks" hint="Send a POST request when pulls finish.">
+      <SettingRow label={t('settings.webhook.enable')} hint={t('settings.webhook.enableHint')}>
         <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', userSelect: 'none' }}>
           <div
             onClick={() => setFormData({ enable_webhook: !getValue('enable_webhook') })}
@@ -27,12 +30,12 @@ export default function WebhookSettings({ getValue, setFormData }: WebhookSettin
             }} />
           </div>
           <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-            {getValue('enable_webhook') ? 'Enabled' : 'Disabled'}
+            {getValue('enable_webhook') ? t('settings.webhook.enabled') : t('settings.webhook.disabled')}
           </span>
         </label>
       </SettingRow>
 
-      <SettingRow label="Webhook Type" hint="Platform to deliver notifications to.">
+      <SettingRow label={t('settings.webhook.type')} hint={t('settings.webhook.typeHint')}>
         <div style={{ maxWidth: '240px' }}>
           <Select
             value={getValue('webhook_type') || 'dingtalk'}
@@ -51,7 +54,7 @@ export default function WebhookSettings({ getValue, setFormData }: WebhookSettin
         </div>
       </SettingRow>
 
-      <SettingRow label="Webhook URL" hint="Endpoint to POST notification payloads." noBorder>
+      <SettingRow label={t('settings.webhook.url')} hint={t('settings.webhook.urlHint')} noBorder>
         <input type="text" className="form-control"
           value={getValue('webhook_url') || ''}
           onChange={e => setFormData({ webhook_url: e.target.value })}
