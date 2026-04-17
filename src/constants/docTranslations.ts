@@ -466,11 +466,20 @@ export const docTranslations: Record<Language, Record<string, string>> = {
     
     'docs.prev': 'Previous',
     'docs.next': 'Next',
-    
+
     'docs.proTip': 'Pro Tip',
     'docs.note': 'Note',
     'docs.warning': 'Warning',
     'docs.tip': 'Tip',
+
+    // Search translations
+    'search.placeholderShort': 'Search...',
+    'search.placeholderLong': 'Search documentation...',
+    'search.noResults': 'No results found for',
+    'search.hint': 'Start typing to search the docs...',
+    'search.navigate': 'Navigate',
+    'search.open': 'Open',
+    'search.close': 'Close',
   },
   zh: {
     'docs.intro.title': '介绍',
@@ -934,13 +943,22 @@ export const docTranslations: Record<Language, Record<string, string>> = {
     'docs.note': '注意',
     'docs.warning': '警告',
     'docs.tip': '提示',
-    
+
     'docs.section.gettingStarted': '快速入门',
     'docs.section.coreFeatures': '核心功能',
     'docs.section.configuration': '配置',
     'docs.section.reference': '参考',
-    
+
     'docs.prev': '上一页',
     'docs.next': '下一页',
+
+    // Search translations
+    'search.placeholderShort': '搜索...',
+    'search.placeholderLong': '搜索文档...',
+    'search.noResults': '未找到结果',
+    'search.hint': '开始输入以搜索文档...',
+    'search.navigate': '导航',
+    'search.open': '打开',
+    'search.close': '关闭',
   }
 }
