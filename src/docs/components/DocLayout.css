@@ -63,6 +63,7 @@
   background: var(--bg-secondary);
   z-index: 100;
   border-bottom: 1px solid var(--border-color);
+  box-shadow: none;
 }
 
 .doc-header-container {
@@ -598,6 +599,7 @@
   flex-direction: column;
   z-index: 50;
   border-right: 1px solid var(--border-color);
+  box-shadow: none;
 }
 
 .doc-sidebar-logo {
