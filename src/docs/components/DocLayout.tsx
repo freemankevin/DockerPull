@@ -282,9 +282,10 @@ export default function DocLayout() {
         <aside className={`doc-sidebar ${isMobileMenuOpen ? 'doc-sidebar-open' : ''}`}>
           {/* Logo */}
           <div className="doc-sidebar-logo">
-            <a href="/" className="doc-logo">
+            <a href="/docs" className="doc-logo">
               <img src="/logo.png" alt="DockerPull" className="doc-logo-img" />
-              <span className="doc-logo-text">DockerPull</span>
+              <span className="doc-logo-divider" />
+              <span className="doc-logo-text">Docs</span>
             </a>
           </div>
 

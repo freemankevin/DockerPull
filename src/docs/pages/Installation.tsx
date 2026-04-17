@@ -15,7 +15,7 @@ export default function Installation() {
     <div className="doc-page">
       <div className="doc-page-header">
         <div className="doc-page-breadcrumb">
-          <a href="/docs/introduction">Docs</a>
+          <a href="/docs">Docs</a>
           <span className="doc-page-breadcrumb-separator">/</span>
           <span>{t('docs.section.gettingStarted')}</span>
         </div>

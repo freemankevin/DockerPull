@@ -14,7 +14,7 @@ export default function Tokens() {
     <div className="doc-page">
       <div className="doc-page-header">
         <div className="doc-page-breadcrumb">
-          <a href="/docs/introduction">Docs</a>
+          <a href="/docs">Docs</a>
           <span className="doc-page-breadcrumb-separator">/</span>
           <span>{t('docs.section.configuration')}</span>
         </div>

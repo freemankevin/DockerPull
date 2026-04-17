@@ -66,7 +66,7 @@ function MainApp() {
           </li>
           <li className="nav-divider">
             <a
-              href="/docs/introduction"
+              href="/docs"
               className="docs-link"
               target="_blank"
               rel="noopener noreferrer"

@@ -424,12 +424,25 @@
   gap: 10px;
   text-decoration: none;
   color: var(--text-primary);
+  cursor: pointer;
+}
+
+.doc-logo:hover,
+.doc-logo:hover .doc-logo-text {
+  color: var(--text-primary);
 }
 
 .doc-logo-img {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-card);
+}
+
+.doc-logo-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-color);
+  margin: 0 2px;
 }
 
 .doc-logo-text {
