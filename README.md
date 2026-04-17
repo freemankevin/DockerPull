@@ -9,6 +9,20 @@ Docker 镜像拉取和导出管理工具。
 - 🎯 简洁的 Web 界面
 - ⚡ 快速部署
 
+## 界面截图
+
+### 登录页面
+![Login](public/demo/login.png)
+
+### 主页面
+![Home](public/demo/home.png)
+
+### 日志页面
+![Logs](public/demo/logs.png)
+
+### 设置页面
+![Settings](public/demo/settings.png)
+
 ## 快速开始
 
 ### 环境要求
@@ -65,8 +79,6 @@ cd app && ./startup.sh
 ### 提交 Issue
 
 如果您遇到问题或有功能建议，请 [提交 Issue](https://github.com/freemankevin/DockerPull/issues/new/choose)。
-
-我们提供中英文 Issue 模板，请根据您的语言偏好选择合适的模板。
 
 ### 提交 PR
 
