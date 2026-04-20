@@ -1,0 +1,15 @@
+node_modules
+dist
+data
+exports
+.git
+.github
+.kilo
+*.md
+.gitignore
+docker-compose.yml
+nginx.conf
+startup.sh
+tsconfig.tsbuildinfo
+app/data
+app/exports

@@ -1,26 +1,21 @@
-version: "3.8"
-
 services:
   app:
-    build: ./app
+    image: ${IMAGE:-ghcr.io/freemankevin/dockpull:latest}
+    build:
+      context: .
     ports:
-      - "8080:8080"
+      - "${PORT:-9238}:9238"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./data:/app/data
-      - ./exports:/app/exports
-      - ./config:/app/config
+      - ${DATA_DIR:-./data}:/app/data
+      - ${EXPORTS_DIR:-./exports}:/app/exports
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - SERVER_HOST=0.0.0.0
     restart: unless-stopped
-
-  web:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./dist:/usr/share/nginx/html:ro
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - app
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9238/api/stats"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

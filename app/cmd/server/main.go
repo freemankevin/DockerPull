@@ -177,6 +177,16 @@ func main() {
 	}
 	stepStart = logStep("配置路由", stepStart)
 
+	// Step 10: Serve static files (for single container deployment)
+	distDir := "./dist"
+	if _, err := os.Stat(distDir); err == nil {
+		r.Static("/assets", distDir+"/assets")
+		r.NoRoute(func(c *gin.Context) {
+			c.File(distDir + "/index.html")
+		})
+		stepStart = logStep("配置静态文件服务", stepStart)
+	}
+
 	totalTime := time.Since(startTime).Milliseconds()
 	fmt.Println()
 	fmt.Printf("\033[32m%s [INFO] ✅ 服务启动完成! 总耗时: %dms\033[0m\n",
@@ -187,5 +197,16 @@ func main() {
 		time.Now().Format("2006-01-02 15:04:05"))
 	fmt.Println()
 
-	r.Run("127.0.0.1:9238")
+	host := os.Getenv("SERVER_HOST")
+	if host == "" {
+		host = "127.0.0.1"
+	}
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = os.Getenv("SERVER_PORT")
+	}
+	if port == "" {
+		port = "9238"
+	}
+	r.Run(host + ":" + port)
 }
